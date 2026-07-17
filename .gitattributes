@@ -1,0 +1,51 @@
+# Auto-detect text files
+* text=auto
+
+# Source files
+*.py text diff=python
+*.js text
+*.ts text
+*.html text diff=html
+*.css text
+*.json text
+*.yaml text
+*.yml text
+*.md text
+*.rst text
+*.toml text
+*.cfg text
+*.ini text
+*.txt text
+*.sh text eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.eot binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar.gz binary
+*.gz binary
+*.rar binary
+*.7z binary
+
+# Git generated
+*.orig binary
+*.BACKUP.* binary
+*.BASE.* binary
+*.LOCAL.* binary
+*.REMOTE.* binary
+*_BACKUP_* binary
+*_BASE_* binary
+*_LOCAL_* binary
+*_REMOTE_* binary
