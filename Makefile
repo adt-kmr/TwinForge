@@ -1,52 +1,40 @@
-.PHONY: help install install-dev lint format test coverage clean build dist release security check-all
+.PHONY: help install install-dev lint format test coverage clean
 
 help:
 	@echo "Usage:"
-	@echo "  make install       Install production dependencies"
-	@echo "  make install-dev   Install development dependencies"
-	@echo "  make lint          Run linters (flake8, mypy)"
-	@echo "  make format        Format code (black, isort)"
-	@echo "  make test          Run tests with pytest"
-	@echo "  make coverage      Run tests with coverage report"
-	@echo "  make clean         Clean build artifacts"
-	@echo "  make build         Build source and wheel distributions"
-	@echo "  make security      Run security checks (bandit, safety)"
-	@echo "  make check-all     Run all checks (format, lint, test, security)"
+	@echo "  make install       Install SDK + dependencies"
+	@echo "  make install-dev   Install dev dependencies + pre-commit"
+	@echo "  make lint          Run flake8 + mypy"
+	@echo "  make format        Run black + isort"
+	@echo "  make test          Run pytest"
+	@echo "  make coverage      Run pytest with coverage"
+	@echo "  make clean         Remove build artifacts"
 
 install:
+	pip install -e sdk/
 	pip install -r requirements.txt
 
 install-dev:
+	make install
 	pip install -r requirements-dev.txt
 	pre-commit install
 
 lint:
-	flake8 src/ tests/
-	mypy src/ tests/
+	flake8 sdk/ orchestrator/ capture/ reconstruction/ semantic/ robot/ sarvam/ tests/
+	mypy sdk/ orchestrator/ capture/ reconstruction/ semantic/ robot/ sarvam/ tests/
 
 format:
-	black src/ tests/
-	isort src/ tests/
+	black sdk/ orchestrator/ capture/ reconstruction/ semantic/ robot/ sarvam/ tests/
+	isort sdk/ orchestrator/ capture/ reconstruction/ semantic/ robot/ sarvam/ tests/
 
 test:
 	pytest
 
 coverage:
-	pytest --cov=src --cov-report=term-missing --cov-report=html
+	pytest --cov-report=term-missing --cov-report=html
 
 clean:
 	rm -rf build/ dist/ *.egg-info/
-	rm -rf .pytest_cache/ .mypy_cache/ .ruff_cache/
-	rm -rf htmlcov/ coverage/
+	rm -rf .pytest_cache/ .mypy_cache/ .ruff_cache/ htmlcov/
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete
-
-build: clean
-	python -m build
-
-security:
-	bandit -r src/ -ll
-	safety check
-
-check-all: format lint test security
-	@echo "All checks passed!"

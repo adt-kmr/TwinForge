@@ -1,0 +1,8 @@
+name: hospital_demo
+description: Hospital ward digital twin scenario
+capture_area: 80x40m
+features:
+  - patient_rooms
+  - nurse_stations
+  - equipment_corridors
+robot_path: hospital_route_a

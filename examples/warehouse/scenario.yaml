@@ -1,0 +1,8 @@
+name: warehouse_demo
+description: Warehouse digital twin scenario
+capture_area: 50x30m
+features:
+  - pallet_racks
+  - forklifts
+  - conveyor_belts
+robot_path: warehouse_route_a

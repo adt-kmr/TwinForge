@@ -1,0 +1,8 @@
+name: factory_demo
+description: Factory floor digital twin scenario
+capture_area: 100x60m
+features:
+  - assembly_lines
+  - robotic_arms
+  - storage_silos
+robot_path: factory_route_a

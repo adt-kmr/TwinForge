@@ -1,0 +1,28 @@
+mappings:
+  - label: wall
+    prefab: Walls/InteriorWall
+    collider: BoxCollider
+  - label: floor
+    prefab: Floors/TileFloor
+    collider: BoxCollider
+  - label: door
+    prefab: Doors/PivotDoor
+    collider: MeshCollider
+  - label: window
+    prefab: Windows/FixedWindow
+    collider: BoxCollider
+  - label: chair
+    prefab: Furniture/OfficeChair
+    collider: MeshCollider
+  - label: table
+    prefab: Furniture/RectTable
+    collider: BoxCollider
+  - label: shelf
+    prefab: Storage/IndustrialShelf
+    collider: MeshCollider
+  - label: cabinet
+    prefab: Storage/LockerCabinet
+    collider: BoxCollider
+  - label: robot
+    prefab: Robots/TwinForgeRobot
+    collider: CapsuleCollider

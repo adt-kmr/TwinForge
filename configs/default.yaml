@@ -1,0 +1,27 @@
+project:
+  name: TwinForge
+  version: 0.1.0
+
+capture:
+  format: rgbd
+  resolution: [1920, 1080]
+  chunk_size_mb: 16
+
+reconstruction:
+  fast_path:
+    method: tsdf
+    voxel_size: 0.005
+  fidelity_path:
+    method: colmap+nerfstudio
+    quality: high
+
+semantic:
+  model: yoloworld+mobilesam
+  confidence: 0.5
+
+twin:
+  export_format: fbx
+  apply_colliders: true
+
+robot:
+  default_adapter: sim

@@ -1,0 +1,17 @@
+openapi: 3.0.3
+info:
+  title: TwinForge API
+  version: 0.1.0
+paths:
+  /capture/{session_id}:
+    post:
+      summary: Upload capture data
+  /reconstruct/{session_id}:
+    post:
+      summary: Start reconstruction
+  /train:
+    post:
+      summary: Train policy
+  /deploy/{model_id}/{target}:
+    post:
+      summary: Deploy model to target

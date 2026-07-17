@@ -1,0 +1,31 @@
+services:
+  orchestrator:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.orchestrator
+    ports:
+      - "8000:8000"
+    volumes:
+      - ..:/app
+    environment:
+      - CAPTURE_URL=http://capture:8001
+      - SEMANTIC_URL=http://semantic:8002
+
+  capture:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.capture
+    ports:
+      - "8001:8001"
+    volumes:
+      - capture_data:/data
+
+  semantic:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.semantic
+    ports:
+      - "8002:8002"
+
+volumes:
+  capture_data:

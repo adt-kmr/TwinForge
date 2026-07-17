@@ -1,0 +1,8 @@
+name: museum_demo
+description: Museum gallery digital twin scenario
+capture_area: 60x40m
+features:
+  - exhibition_halls
+  - display_cases
+  - visitor_paths
+robot_path: museum_route_a
