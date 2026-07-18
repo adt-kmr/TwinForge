@@ -163,3 +163,18 @@ dmypy.json
 /models/
 
 data/
+
+# Dashboard
+node_modules/
+
+# Unity
+twin/unity_project/Library/
+twin/unity_project/Temp/
+twin/unity_project/Logs/
+twin/unity_project/Assets/Generated/
+
+# Android
+capture/android/.gradle/
+capture/android/local.properties
+capture/android/**/build/
+
