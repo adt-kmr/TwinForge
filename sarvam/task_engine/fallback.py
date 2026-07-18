@@ -54,7 +54,7 @@ class FunctionGemmaPlanner(TaskPlanner):
         return None
 
     def plan(self, text: str, lang: str = "en") -> TaskGraph:
-        nodes = []
+        nodes: list = []
         for clause in SPLIT.split((text or "").lower()):
             clause = clause.strip()
             if not clause:

@@ -3,6 +3,21 @@ pip>=24.0
 setuptools>=69.0
 wheel>=0.42
 
+# Runtime — every pipeline stage runs offline with just these
+fastapi>=0.110.0
+uvicorn>=0.29.0
+python-multipart>=0.0.9   # chunked capture uploads
+httpx>=0.27.0             # SDK transport
+numpy>=1.26.0
+PyYAML>=6.0
+
+# Optional hardware/model backends. Each is lazy-imported behind an interface that
+# has a working pure-numpy fallback, so none of these are needed to run or test.
+#   open3d>=0.18.0        # TSDF fusion (reconstruction fast path)
+#   ultralytics>=8.2.0    # YOLO-World 2D segmentation
+#   qai-hub>=0.9.0        # Qualcomm AI Hub export/quantization
+#   pyserial>=3.5         # UNO Q serial bridge
+
 # Development
 black>=24.2.0
 isort>=5.13.2
