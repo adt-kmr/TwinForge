@@ -178,3 +178,10 @@ capture/android/.gradle/
 capture/android/local.properties
 capture/android/**/build/
 
+# Sarvam - Model files (LARGE FILES - not tracked in git)
+*.litertlm
+*.xnnpack_cache_*
+sarvam/*.litertlm
+sarvam/*.xnnpack_cache_*
+mobile-actions_q8_ekv1024.litertlm
+sarvam/soniq-assistant-v2.litertlm
