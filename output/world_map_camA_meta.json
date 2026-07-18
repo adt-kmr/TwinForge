@@ -1,0 +1,11 @@
+{
+  "camera": "camA",
+  "shape": [
+    1080,
+    1920,
+    2
+  ],
+  "dtype": "float32",
+  "meaning": "world_map[y, x] -> [world_x_cm, world_y_cm]",
+  "source": "multi_marker_homography.py"
+}
