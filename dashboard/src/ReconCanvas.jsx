@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Dithering } from "@paper-design/shaders-react";
 
 import { createScene, STAGES } from "./recon.js";
 
@@ -22,6 +23,10 @@ export default function ReconCanvas() {
   const pointsRef = useRef(null);
   const objectsRef = useRef(null);
   const [phase, setPhase] = useState(0);
+  const [atRest, setAtRest] = useState(true);
+  const [reducedMotion] = useState(
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
 
   useEffect(() => {
     const scene = createScene(canvasRef.current);
@@ -29,6 +34,7 @@ export default function ReconCanvas() {
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let lastPhase = -1;
+    let lastRest = true;
 
     const paint = (progress) => {
       const state = scene.render(progress);
@@ -37,6 +43,10 @@ export default function ReconCanvas() {
       if (state.phase !== lastPhase) {
         lastPhase = state.phase;
         setPhase(state.phase);
+      }
+      if (state.rest !== lastRest) {
+        lastRest = state.rest;
+        setAtRest(state.rest);
       }
     };
 
@@ -93,6 +103,17 @@ export default function ReconCanvas() {
     <section className="recon" ref={trackRef}>
       <div className="recon__stage">
         <canvas className="recon__canvas" ref={canvasRef} />
+
+        <Dithering
+          className={`recon__rest${atRest ? "" : " recon__rest--hidden"}`}
+          aria-hidden="true"
+          colorFront="#ff2900"
+          colorBack="#00000000"
+          shape="sphere"
+          type="4x4"
+          size={2}
+          speed={reducedMotion ? 0 : 1}
+        />
 
         <div className="recon__title" ref={titleRef}>
           <h1 className="display">

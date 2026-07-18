@@ -375,17 +375,19 @@ export function createScene(canvas) {
   }
 
   function render(progress) {
-    if (!W || !H) return { phase: 0, points: 0, objects: 0 };
+    if (!W || !H) return { phase: 0, points: 0, objects: 0, rest: true };
     ctx.clearRect(0, 0, W, H);
 
     // Hold on the title, then run six phases across the rest of the track.
+    const rest = progress <= 0.1;
     const run = clamp((progress - 0.1) / 0.86, 0, 1);
     const f = run * 6;
     const phase = Math.min(5, Math.floor(f));
     const t = smooth(clamp(f - phase, 0, 1));
 
-    // The empty room is present from the first frame — the space exists before it is scanned.
-    drawGrid(phase >= 3 ? 1 : 0.8);
+    // Before the first scroll the room hasn't been captured yet, so the grid stays off —
+    // the resting circular shader stands in for it until motion starts the scan.
+    if (!rest) drawGrid(phase >= 3 ? 1 : 0.8);
 
     const sweep = phase === 0 ? t : 1;
     const jitter = phase === 0 ? 1 : phase === 1 ? 1 - t : 0;
@@ -436,7 +438,7 @@ export function createScene(canvas) {
       drawRobot(t);
     }
 
-    return { phase, points: visible, objects: phase >= 2 ? PROPS.length : 0 };
+    return { phase, points: visible, objects: phase >= 2 ? PROPS.length : 0, rest };
   }
 
   return { resize, render };
