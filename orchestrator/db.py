@@ -1,5 +1,6 @@
 """Shared metadata store (blueprint section 17.2), SQLite."""
 import os
+import re
 import sqlite3
 import uuid
 
@@ -68,7 +69,7 @@ CREATE TABLE IF NOT EXISTS telemetry(
 """
 
 
-def connect(path: str = None) -> sqlite3.Connection:
+def connect(path: str | None = None) -> sqlite3.Connection:
     path = path or DB_PATH
     if path != ":memory:":
         os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
@@ -87,16 +88,44 @@ def new_id() -> str:
     return uuid.uuid4().hex
 
 
+# Table and column names cannot be bound as SQL parameters, so they are
+# interpolated. Every identifier is checked against the schema below first —
+# callers pass literals today, but this keeps a future caller from routing a
+# request field into an identifier position.
+TABLES = frozenset(re.findall(r"CREATE TABLE IF NOT EXISTS (\w+)", SCHEMA))
+_IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+
+def _check_table(table: str) -> str:
+    if table not in TABLES:
+        raise ValueError(f"unknown table {table!r}")
+    return table
+
+
+def _check_columns(cols) -> None:
+    bad = [c for c in cols if not _IDENTIFIER.match(c)]
+    if bad:
+        raise ValueError(f"invalid column name(s): {bad}")
+
+
 def insert(conn: sqlite3.Connection, table: str, **cols) -> str:
     row_id = cols.pop("id", None) or new_id()
     cols["id"] = row_id
+    _check_table(table)
+    _check_columns(cols)
     keys = ", ".join(cols)
     marks = ", ".join("?" for _ in cols)
-    conn.execute(f"INSERT INTO {table}({keys}) VALUES ({marks})", list(cols.values()))
+    conn.execute(
+        f"INSERT INTO {table}({keys}) VALUES ({marks})",  # nosec B608 - identifiers checked
+        list(cols.values()),
+    )
     conn.commit()
     return row_id
 
 
 def get(conn: sqlite3.Connection, table: str, row_id: str):
-    row = conn.execute(f"SELECT * FROM {table} WHERE id = ?", (row_id,)).fetchone()
+    row = conn.execute(
+        f"SELECT * FROM {_check_table(table)} WHERE id = ?",  # nosec B608 - table checked
+        (row_id,),
+    ).fetchone()
     return dict(row) if row else None
