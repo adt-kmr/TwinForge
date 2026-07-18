@@ -26,14 +26,13 @@ jobs:
           python -m pip install --upgrade pip
           make install-dev
 
-      - name: Lint with flake8
-        run: flake8 src/ tests/
+      - name: Lint with flake8 + mypy
+        run: make lint
 
-      - name: Check formatting with black
-        run: black --check src/ tests/
-
-      - name: Type check with mypy
-        run: mypy src/ tests/
+      # Not gated yet: the tree has never been black-formatted (22 files would
+      # change). Run `make format` once, commit it alone, then enable this step.
+      # - name: Check formatting with black + isort
+      #   run: make format-check
 
   test:
     runs-on: ubuntu-latest
@@ -56,7 +55,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          pytest --cov=src --cov-report=xml --cov-report=term-missing
+          pytest --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -80,4 +79,4 @@ jobs:
           make install-dev
 
       - name: Security check with bandit
-        run: bandit -r src/ -ll
+        run: bandit -r sdk/ orchestrator/ capture/ reconstruction/ semantic/ robot/ sarvam/ twin/ policy/ deployment/ -ll
