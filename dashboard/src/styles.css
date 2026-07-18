@@ -1,71 +1,440 @@
+/* TwinForge operator console — a surveyor's drawing lit from behind:
+   slate ink, hairline grid, amber where work is happening, cyan where data landed. */
+
 :root {
+  --ink: #080d16;
+  --panel: #0e1626;
+  --line: #1d2b42;
+  --text: #dbe4f2;
+  --muted: #778aa8;
+  --amber: #f2a03d;
+  --mint: #4ed9a4;
+  --coral: #ff6b6b;
+  --cyan: #7bd3f7;
+
+  --mono: ui-monospace, "SF Mono", "IBM Plex Mono", "JetBrains Mono", Menlo, monospace;
+
   color-scheme: dark;
-  font-family: ui-sans-serif, system-ui, sans-serif;
-  background: #0e1116;
-  color: #e6edf3;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  padding: 2rem;
+  /* The survey grid belongs to the plan view, where a square means one metre.
+     Everywhere else it is just texture, so the page stays flat and unlit. */
+  background: var(--ink);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
 }
 
-h1 {
-  font-size: 1.25rem;
-  margin: 0 0 0.25rem;
+.console {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
 }
 
-.sub {
-  color: #8b949e;
-  font-size: 0.85rem;
-  margin: 0 0 1.5rem;
+/* ------------------------------------------------------------------ header */
+
+.console > header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1.25rem;
+  margin-bottom: 2rem;
 }
 
-table {
-  border-collapse: collapse;
-  width: 100%;
-  font-size: 0.9rem;
+.console h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
 }
 
-th,
-td {
-  text-align: left;
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid #21262d;
+.eyebrow {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 
-th {
-  color: #8b949e;
-  font-weight: 500;
+.link {
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
-td.detail {
-  color: #8b949e;
-  max-width: 32rem;
-  overflow-wrap: anywhere;
+.link::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 0.6rem;
+  border-radius: 50%;
+  background: currentColor;
+  vertical-align: middle;
 }
 
-.badge {
-  border-radius: 999px;
-  padding: 0.1rem 0.6rem;
+.link.up {
+  color: var(--mint);
+}
+
+.link.down {
+  color: var(--coral);
+}
+
+/* -------------------------------------------------------------------- grid */
+
+main {
+  display: grid;
+  grid-template-columns: minmax(360px, 5fr) 7fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1000px) {
+  main {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* -------------------------------------------------------------------- rail */
+
+.rail {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  /* The pipeline is a strict sequence — every stage consumes the id before it.
+     The line is that dependency, drawn. */
+  border-left: 1px solid var(--line);
+}
+
+.stage {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: 1rem;
+  padding: 0 0 2rem 1.5rem;
+  margin-left: -1px;
+}
+
+.stage .marker {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-left: -2.75rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  transition: color 150ms, border-color 150ms;
+}
+
+.stage.ready .marker {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
+.stage.busy .marker {
+  color: var(--amber);
+  border-color: var(--amber);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.stage.done .marker {
+  color: var(--mint);
+  border-color: var(--mint);
+}
+
+.stage.failed .marker {
+  color: var(--coral);
+  border-color: var(--coral);
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage.busy .marker {
+    animation: none;
+  }
+}
+
+.stage .body {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.stage .head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.stage h3 {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.stage .out {
+  color: var(--cyan);
   font-size: 0.75rem;
 }
 
-.running {
-  background: #1f2f52;
-  color: #79b8ff;
+.stage .fields {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.9rem 0;
 }
 
-.done {
-  background: #14301f;
-  color: #56d364;
+.stage label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
-.failed {
-  background: #40191b;
-  color: #f85149;
+.stage input,
+.stage select {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  letter-spacing: normal;
+  text-transform: none;
 }
 
-.empty {
-  color: #8b949e;
+.stage input:focus-visible,
+.stage select:focus-visible,
+.stage button:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.stage button {
+  padding: 0.5rem 1.1rem;
+  border: 1px solid var(--text);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 120ms, color 120ms;
+}
+
+.stage button:hover:not(:disabled) {
+  background: var(--text);
+  color: var(--ink);
+}
+
+.stage button:disabled {
+  border-color: var(--line);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.hint {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.hint code {
+  color: var(--cyan);
+  overflow-wrap: anywhere;
+}
+
+.graph {
+  margin: 0.75rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.graph span {
+  color: var(--cyan);
+}
+
+.error {
+  margin-top: 0.9rem;
+  border-left: 2px solid var(--coral);
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 107, 107, 0.07);
+  font-size: 0.78rem;
+}
+
+.error strong {
+  color: var(--coral);
+  font-weight: 500;
+}
+
+.error dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.15rem 1rem;
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+}
+
+.error dd {
+  margin: 0;
+  color: var(--text);
+}
+
+/* -------------------------------------------------------------------- view */
+
+.view {
+  display: grid;
+  gap: 1.5rem;
+  position: sticky;
+  top: 2rem;
+}
+
+@media (max-width: 1000px) {
+  .view {
+    position: static;
+  }
+}
+
+.panel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 1.25rem;
+}
+
+.panel h2 {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* ------------------------------------------------------------- plan view */
+
+svg.plan {
+  display: block;
+  width: 100%;
+  max-height: 58vh;
+}
+
+.empty-plan {
+  display: grid;
+  place-content: center;
+  gap: 0.35rem;
+  min-height: 16rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty-plan p {
+  margin: 0;
+}
+
+.gridline {
+  stroke: var(--line);
+}
+
+.substrate rect {
+  fill: rgba(123, 211, 247, 0.05);
+  stroke: var(--line);
+}
+
+.prop rect {
+  fill: rgba(123, 211, 247, 0.14);
+  stroke: var(--cyan);
+}
+
+.prop text {
+  fill: var(--muted);
+  font-family: var(--mono);
+  letter-spacing: 0.1em;
+}
+
+.trace {
+  fill: none;
+  stroke: var(--amber);
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.robot {
+  fill: var(--amber);
+}
+
+/* -------------------------------------------------------------------- jobs */
+
+.jobs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 20rem;
+  overflow-y: auto;
+  font-size: 0.78rem;
+}
+
+.jobs li {
+  display: grid;
+  grid-template-columns: 8rem 5rem 1fr;
+  gap: 1rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.jobs .stage-name {
+  color: var(--text);
+  letter-spacing: 0.08em;
+}
+
+.jobs .status {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+}
+
+.jobs .running .status,
+.jobs li.running .status {
+  color: var(--amber);
+}
+
+.jobs li.done .status {
+  color: var(--mint);
+}
+
+.jobs li.failed .status {
+  color: var(--coral);
+}
+
+.jobs .detail {
+  color: var(--muted);
+  overflow-wrap: anywhere;
 }
