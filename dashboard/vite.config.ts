@@ -10,7 +10,7 @@ export default defineConfig({
     // Same-origin in the browser, so the orchestrator needs no CORS config.
     proxy: Object.fromEntries(
       ["/health", "/capture", "/reconstruct", "/segment", "/generate-twin", "/plan",
-       "/train", "/optimize", "/deploy", "/sync", "/status"]
+       "/train", "/optimize", "/deploy", "/sync", "/status", "/benchmarks"]
         .map((route) => [route, { target: ORCHESTRATOR }])
         .concat([["/ws/status", { target: ORCHESTRATOR, ws: true }]]),
     ),

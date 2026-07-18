@@ -36,3 +36,4 @@ export const optimize = (policy_id, device_label) =>
   post("/optimize", { policy_id, device_label });
 export const deploy = (artifact_id, kind) => post("/deploy", { artifact_id, kind });
 export const sync = (twin_id, new_scan_id) => post("/sync", { twin_id, new_scan_id });
+export const benchmarks = () => send("/benchmarks");
