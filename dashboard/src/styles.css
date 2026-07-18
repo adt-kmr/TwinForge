@@ -318,6 +318,33 @@ body {
   height: 100%;
 }
 
+/* The lens: the circular procedural shader anchoring the hero. It's the first
+   visualization a viewer meets, so it sits well right of center and stays the
+   Measured Colour Rule's hot end — the sensor is actively looking. Fades out the
+   moment scroll starts and the real grid takes over. */
+.recon__rest {
+  position: absolute;
+  left: 84%;
+  top: 44%;
+  width: min(48vmin, 520px);
+  height: min(48vmin, 520px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.recon__rest--hidden {
+  opacity: 0;
+}
+
+@media (max-width: 900px) {
+  .recon__rest {
+    left: 72%;
+    top: 38%;
+  }
+}
+
 .recon__title {
   position: absolute;
   inset: auto auto 12vh 0;
@@ -337,7 +364,7 @@ body {
 
 .display em {
   font-style: normal;
-  color: var(--far);
+  color: #ff2900;
 }
 
 .lede {

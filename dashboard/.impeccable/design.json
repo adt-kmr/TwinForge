@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-19T00:00:00.000Z",
+  "title": "Design System: TwinForge",
+  "extensions": {
+    "colorMeta": {
+      "vellum": {
+        "role": "neutral",
+        "displayName": "Cool Drafting Vellum",
+        "canonical": "oklch(95.2% 0.008 121.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.008 121.6)",
+          "oklch(26.4% 0.008 121.6)",
+          "oklch(37.9% 0.008 121.6)",
+          "oklch(49.3% 0.008 121.6)",
+          "oklch(60.7% 0.008 121.6)",
+          "oklch(72.1% 0.008 121.6)",
+          "oklch(83.6% 0.008 121.6)",
+          "oklch(95.0% 0.008 121.6)"
+        ]
+      },
+      "vellum-deep": {
+        "role": "neutral",
+        "displayName": "Deep Vellum",
+        "canonical": "oklch(93.0% 0.011 123.5)",
+        "tonalRamp": [
+          "oklch(15.0% 0.011 123.5)",
+          "oklch(26.4% 0.011 123.5)",
+          "oklch(37.9% 0.011 123.5)",
+          "oklch(49.3% 0.011 123.5)",
+          "oklch(60.7% 0.011 123.5)",
+          "oklch(72.1% 0.011 123.5)",
+          "oklch(83.6% 0.011 123.5)",
+          "oklch(95.0% 0.011 123.5)"
+        ]
+      },
+      "graphite": {
+        "role": "neutral",
+        "displayName": "Graphite",
+        "canonical": "oklch(19.5% 0.011 260.7)",
+        "tonalRamp": [
+          "oklch(15.0% 0.011 260.7)",
+          "oklch(26.4% 0.011 260.7)",
+          "oklch(37.9% 0.011 260.7)",
+          "oklch(49.3% 0.011 260.7)",
+          "oklch(60.7% 0.011 260.7)",
+          "oklch(72.1% 0.011 260.7)",
+          "oklch(83.6% 0.011 260.7)",
+          "oklch(95.0% 0.011 260.7)"
+        ]
+      },
+      "body-ink": {
+        "role": "neutral",
+        "displayName": "Body Ink",
+        "canonical": "oklch(31.4% 0.014 248.3)",
+        "tonalRamp": [
+          "oklch(15.0% 0.014 248.3)",
+          "oklch(26.4% 0.014 248.3)",
+          "oklch(37.9% 0.014 248.3)",
+          "oklch(49.3% 0.014 248.3)",
+          "oklch(60.7% 0.014 248.3)",
+          "oklch(72.1% 0.014 248.3)",
+          "oklch(83.6% 0.014 248.3)",
+          "oklch(95.0% 0.014 248.3)"
+        ]
+      },
+      "muted-ink": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "oklch(43.0% 0.013 158.4)",
+        "tonalRamp": [
+          "oklch(15.0% 0.013 158.4)",
+          "oklch(26.4% 0.013 158.4)",
+          "oklch(37.9% 0.013 158.4)",
+          "oklch(49.3% 0.013 158.4)",
+          "oklch(60.7% 0.013 158.4)",
+          "oklch(72.1% 0.013 158.4)",
+          "oklch(83.6% 0.013 158.4)",
+          "oklch(95.0% 0.013 158.4)"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Rule",
+        "canonical": "oklch(85.3% 0.015 132.5)",
+        "tonalRamp": [
+          "oklch(15.0% 0.015 132.5)",
+          "oklch(26.4% 0.015 132.5)",
+          "oklch(37.9% 0.015 132.5)",
+          "oklch(49.3% 0.015 132.5)",
+          "oklch(60.7% 0.015 132.5)",
+          "oklch(72.1% 0.015 132.5)",
+          "oklch(83.6% 0.015 132.5)",
+          "oklch(95.0% 0.015 132.5)"
+        ]
+      },
+      "blueprint-indigo": {
+        "role": "primary",
+        "displayName": "Blueprint Indigo",
+        "canonical": "oklch(35.0% 0.132 270.3)",
+        "tonalRamp": [
+          "oklch(15.0% 0.132 270.3)",
+          "oklch(26.4% 0.132 270.3)",
+          "oklch(37.9% 0.132 270.3)",
+          "oklch(49.3% 0.132 270.3)",
+          "oklch(60.7% 0.132 270.3)",
+          "oklch(72.1% 0.132 270.3)",
+          "oklch(83.6% 0.132 270.3)",
+          "oklch(95.0% 0.132 270.3)"
+        ]
+      },
+      "signal-orange": {
+        "role": "primary",
+        "displayName": "Signal Orange",
+        "canonical": "oklch(68.4% 0.208 35.7)",
+        "tonalRamp": [
+          "oklch(15.0% 0.208 35.7)",
+          "oklch(26.4% 0.208 35.7)",
+          "oklch(37.9% 0.208 35.7)",
+          "oklch(49.3% 0.208 35.7)",
+          "oklch(60.7% 0.208 35.7)",
+          "oklch(72.1% 0.208 35.7)",
+          "oklch(83.6% 0.208 35.7)",
+          "oklch(95.0% 0.208 35.7)"
+        ]
+      },
+      "signal-orange-ink": {
+        "role": "primary",
+        "displayName": "Signal Orange Ink",
+        "canonical": "oklch(48.5% 0.165 34.3)",
+        "tonalRamp": [
+          "oklch(15.0% 0.165 34.3)",
+          "oklch(26.4% 0.165 34.3)",
+          "oklch(37.9% 0.165 34.3)",
+          "oklch(49.3% 0.165 34.3)",
+          "oklch(60.7% 0.165 34.3)",
+          "oklch(72.1% 0.165 34.3)",
+          "oklch(83.6% 0.165 34.3)",
+          "oklch(95.0% 0.165 34.3)"
+        ]
+      },
+      "survey-teal": {
+        "role": "secondary",
+        "displayName": "Survey Teal",
+        "canonical": "oklch(68.0% 0.121 179.3)",
+        "tonalRamp": [
+          "oklch(15.0% 0.121 179.3)",
+          "oklch(26.4% 0.121 179.3)",
+          "oklch(37.9% 0.121 179.3)",
+          "oklch(49.3% 0.121 179.3)",
+          "oklch(60.7% 0.121 179.3)",
+          "oklch(72.1% 0.121 179.3)",
+          "oklch(83.6% 0.121 179.3)",
+          "oklch(95.0% 0.121 179.3)"
+        ]
+      },
+      "survey-teal-ink": {
+        "role": "secondary",
+        "displayName": "Survey Teal Ink",
+        "canonical": "oklch(41.4% 0.072 181.5)",
+        "tonalRamp": [
+          "oklch(15.0% 0.072 181.5)",
+          "oklch(26.4% 0.072 181.5)",
+          "oklch(37.9% 0.072 181.5)",
+          "oklch(49.3% 0.072 181.5)",
+          "oklch(60.7% 0.072 181.5)",
+          "oklch(72.1% 0.072 181.5)",
+          "oklch(83.6% 0.072 181.5)",
+          "oklch(95.0% 0.072 181.5)"
+        ]
+      },
+      "alert-red": {
+        "role": "tertiary",
+        "displayName": "Alert Red",
+        "canonical": "oklch(53.6% 0.181 31.9)",
+        "tonalRamp": [
+          "oklch(15.0% 0.181 31.9)",
+          "oklch(26.4% 0.181 31.9)",
+          "oklch(37.9% 0.181 31.9)",
+          "oklch(49.3% 0.181 31.9)",
+          "oklch(60.7% 0.181 31.9)",
+          "oklch(72.1% 0.181 31.9)",
+          "oklch(83.6% 0.181 31.9)",
+          "oklch(95.0% 0.181 31.9)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline only, one per page. Archivo at the expanded end of its width axis (wdth 118)."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles on the landing route and the console page title."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "The live stage name over the reconstruction canvas."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running prose at 18px, capped at 60ch (renders ~71 characters in Archivo)."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Nav, field names, panel headings, buttons. Archivo condensed (wdth 62), uppercase, 0.3em tracking."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Every measured value, endpoint signature, identifier and margin annotation. JetBrains Mono, tabular-nums."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "control",
+        "value": "140ms ease",
+        "purpose": "Button fill and text colour swap on hover."
+      },
+      {
+        "name": "marker-state",
+        "value": "150ms linear",
+        "purpose": "Pipeline stage marker changing colour as a stage becomes ready, busy, done or failed."
+      },
+      {
+        "name": "reveal",
+        "value": "0.7s power2.out, stagger 0.07",
+        "purpose": "GSAP section reveal as a band enters the viewport. Suppressed under prefers-reduced-motion via gsap.matchMedia."
+      },
+      {
+        "name": "scrub",
+        "value": "ScrollTrigger scrub: true",
+        "purpose": "Binds the reconstruction canvas to scroll position rather than a timer. Under reduced motion the canvas paints its final state and the 560vh track collapses to 100vh."
+      },
+      {
+        "name": "pulse",
+        "value": "1.2s ease-in-out infinite",
+        "purpose": "Busy stage marker. Disabled entirely under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "steps",
+        "value": "560px"
+      },
+      {
+        "name": "band",
+        "value": "900px"
+      },
+      {
+        "name": "console",
+        "value": "1000px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The landing route CTA. Graphite fill, square, inverts to Blueprint Indigo on hover.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Open the console</a>",
+      "css": ".ds-btn-primary{display:inline-block;background:#12151a;color:#eef0ea;padding:0.75rem 1.5rem;border:1.5px solid #12151a;border-radius:0;font-family:Archivo,'Helvetica Neue',Arial,sans-serif;font-variation-settings:'wdth' 84,'wght' 620;font-size:0.875rem;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;transition:background 140ms ease,color 140ms ease}.ds-btn-primary:hover{background:#22307e;border-color:#22307e}.ds-btn-primary:focus-visible{outline:2px solid #22307e;outline-offset:3px}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Console stage action. Transparent until hover, when fill and text swap. Disabled state is visibly inert, not dimmed-and-hopeful.",
+      "html": "<button class=\"ds-btn-ghost\">Reconstruct</button> <button class=\"ds-btn-ghost\" disabled>Segment</button>",
+      "css": ".ds-btn-ghost{padding:0.5rem 1.1rem;border:1.5px solid #12151a;background:transparent;color:#12151a;border-radius:0;font-family:Archivo,'Helvetica Neue',Arial,sans-serif;font-variation-settings:'wdth' 76,'wght' 620;font-size:0.875rem;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;transition:background 120ms,color 120ms}.ds-btn-ghost:hover:not(:disabled){background:#12151a;color:#eef0ea}.ds-btn-ghost:disabled{border-color:#cbd1c7;color:#4a524d;cursor:not-allowed}.ds-btn-ghost:focus-visible{outline:2px solid #22307e;outline-offset:3px}"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Console stage input with its condensed uppercase label above.",
+      "html": "<label class=\"ds-field\">Scan id<input class=\"ds-input\" placeholder=\"from the phone app\"></label>",
+      "css": ".ds-field{display:grid;gap:0.35rem;color:#4a524d;font-family:Archivo,'Helvetica Neue',Arial,sans-serif;font-variation-settings:'wdth' 62,'wght' 600;font-size:0.875rem;letter-spacing:0.16em;text-transform:uppercase}.ds-input{width:100%;padding:0.5rem 0.65rem;border:1.5px solid #cbd1c7;border-radius:0;background:#eef0ea;color:#12151a;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:1rem;letter-spacing:normal;text-transform:none}.ds-input::placeholder{color:#4a524d}.ds-input:focus-visible{outline:2px solid #22307e;outline-offset:3px}"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel-surface",
+      "description": "The only container in the system. Deep Vellum on vellum, 1.5px rule, square, no shadow. Never nested.",
+      "html": "<section class=\"ds-panel\"><h2 class=\"ds-panel-title\">Jobs</h2><p class=\"ds-panel-body\">Waiting for the first job &mdash; run a stage.</p></section>",
+      "css": ".ds-panel{border:1.5px solid #cbd1c7;background:#e6e9e1;padding:1.25rem;border-radius:0}.ds-panel-title{margin:0 0 1rem;font-family:Archivo,'Helvetica Neue',Arial,sans-serif;font-variation-settings:'wdth' 62,'wght' 620;color:#4a524d;font-size:0.875rem;letter-spacing:0.22em;text-transform:uppercase}.ds-panel-body{margin:0;color:#4a524d;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:0.875rem}"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Masthead nav shared by both routes. The active item takes Graphite text plus a Signal Orange Ink underline, so colour is never the sole signal.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\">Overview</a><a href=\"#\" class=\"is-here\">Console</a></nav>",
+      "css": ".ds-nav{display:flex;gap:1.5rem;font-family:Archivo,'Helvetica Neue',Arial,sans-serif;font-variation-settings:'wdth' 62,'wght' 600;font-size:0.875rem;letter-spacing:0.22em;text-transform:uppercase}.ds-nav a{color:#4a524d;text-decoration:none;padding-bottom:0.2rem;border-bottom:1.5px solid transparent}.ds-nav a:hover{color:#12151a}.ds-nav a.is-here{color:#12151a;border-bottom-color:#a82c0c}.ds-nav a:focus-visible{outline:2px solid #22307e;outline-offset:3px}"
+    },
+    {
+      "name": "Stage Marker",
+      "kind": "custom",
+      "refersTo": "stage-marker",
+      "description": "Pipeline rail marker. One of only two circles in the system, because it represents a point in a sequence rather than a container. Colour and border together encode ready / busy / done / failed.",
+      "html": "<div class=\"ds-rail\"><span class=\"ds-marker\">01</span><span class=\"ds-marker is-busy\">02</span><span class=\"ds-marker is-done\">03</span><span class=\"ds-marker is-failed\">04</span></div>",
+      "css": ".ds-rail{display:flex;gap:0.75rem}.ds-marker{width:2.5rem;height:2.5rem;display:grid;place-items:center;border:1.5px solid #cbd1c7;border-radius:50%;background:#eef0ea;color:#4a524d;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:0.875rem}.ds-marker.is-busy{color:#a82c0c;border-color:#a82c0c}.ds-marker.is-done{color:#06584e;border-color:#06584e}.ds-marker.is-failed{color:#c0331c;border-color:#c0331c}"
+    },
+    {
+      "name": "Code Block",
+      "kind": "custom",
+      "refersTo": "code-block",
+      "description": "The SDK sample. The one dark surface in the system: graphite ground, square, no shadow.",
+      "html": "<pre class=\"ds-code\"><code><span class=\"k\">from</span> twinforge <span class=\"k\">import</span> TwinForge\n\ntf = TwinForge(<span class=\"s\">\"http://localhost:8000\"</span>)</code></pre>",
+      "css": ".ds-code{margin:0;padding:1.4rem 1.5rem;overflow-x:auto;background:#12151a;color:#d8ded6;border-radius:0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:1rem;line-height:1.75}.ds-code .k{color:#9aa6ff}.ds-code .s{color:#6fd9c4}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Survey Sheet",
+    "overview": "Everything on screen is one drawing, trimmed to register. The page is a large-format survey sheet: corner registration marks, a marginalia column carrying field annotations in monospace, sheet numbering in the masthead (SHEET 01 / 02), and hairline rules dividing the work. Nothing floats above the sheet, because a drawing has no drop shadow. The landing route and the operator console are two sheets of the same document, sharing a masthead and a token set, so moving between them never feels like a handoff to another team.\n\nThe colour comes from the product itself rather than from a mood board. A depth sensor returns a ramp — near is hot, far is cool — and that ramp is the brand. Signal Orange appears only where the system is sensing or working right now; Survey Teal marks what has been labelled; Blueprint Indigo carries structure and finished artifacts. Colour is state, never decoration. When a value has not been measured, the interface says so in words rather than showing a zero.\n\nThis system explicitly rejects the dark neon robotics site — near-black with acid green or cyan, glowing grids, sci-fi HUD chrome — which is the reflex default for anything robot-adjacent and reads as costume rather than instrument. It equally rejects the generic AI-SaaS landing and, above all, fabricated precision: invented benchmarks or decorative metrics that no code produced.",
+    "keyCharacteristics": [
+      "Absolutely flat. Zero box-shadow declarations in the entire system.",
+      "Square by default. Zero border-radius except two deliberate circles.",
+      "Hairlines at 1.5px, never 1px — the viewing context is a projector in a bright room.",
+      "One variable typeface worked at both ends of its width axis, plus one monospace.",
+      "Nothing below 14px anywhere.",
+      "Colour encodes pipeline state; it is never applied for visual interest."
+    ],
+    "rules": [
+      {
+        "name": "The Hot Ink Rule",
+        "body": "Signal Orange (#ff5b2e) and Survey Teal (#14b09a) are graphic colours only. On vellum they measure 2.69:1 and 3.49:1 and fail as text. Any type, icon-with-label, or state indicator that must be read uses the -ink counterpart. Audit test: if you can read words in it, it must be an -ink value.",
+        "section": "colors"
+      },
+      {
+        "name": "The Measured Colour Rule",
+        "body": "Colour reports pipeline state and nothing else. Orange means happening now. Teal means identified. Indigo means settled. Red means refused. A colour applied because a section needed some life is prohibited.",
+        "section": "colors"
+      },
+      {
+        "name": "The 14px Floor Rule",
+        "body": "No text anywhere renders below 0.875rem/14px. Body copy is 16px or larger. The primary viewing context is a projector in a bright room with a back row. Font sizes are always rem, never px.",
+        "section": "typography"
+      },
+      {
+        "name": "The Two-Ramp Rule",
+        "body": "Sizes come from exactly two scales and are never authored ad hoc. --ui-* is a fixed rem scale (14/16/18px) for the console. --brand-* is a fluid clamp() scale for the landing, with >=1.25 between heading steps. A raw value in a font-size declaration is a bug.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Kicker Rule",
+        "body": "A small uppercase tracked label above a section heading is permitted once per route, as voice. Repeating it above every section is scaffolding, not design.",
+        "section": "typography"
+      },
+      {
+        "name": "The No-Shadow Rule",
+        "body": "Surfaces separate by tone and hairline, never by shadow. Audit test: if it casts a shadow, it is not on the sheet.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Square Rule",
+        "body": "border-radius is 0 unless the element represents a literal point in space, in which case it is a full circle. There is no middle. A 12px rounded card does not exist in this system.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use -ink colour variants for anything readable: #a82c0c and #06584e. The saturated #ff5b2e and #14b09a are graphics-only.",
+      "Do keep every hairline at var(--hair) (1.5px). 1px disappears on a projector.",
+      "Do pull every font size from --ui-* or --brand-*. Never author a raw value.",
+      "Do state absence explicitly. \"Not profiled yet\" with the command that fixes it, never a zero or an empty chart.",
+      "Do give every scroll-driven or timeline animation a prefers-reduced-motion equivalent that conveys the same information, and collapse any tall scroll track that becomes purposeless without the scrub.",
+      "Do separate surfaces with tone (#eef0ea to #e6e9e1) and hairlines.",
+      "Do cap running prose at 60ch and use text-wrap: balance on headings, pretty on prose."
+    ],
+    "donts": [
+      "Don't build the dark neon robotics site — near-black with acid green or cyan, glowing grids, sci-fi HUD chrome. Named in PRODUCT.md as the anti-reference.",
+      "Don't build the generic AI-SaaS landing: gradient hero metric, three identical feature cards, a tracked uppercase eyebrow above every section.",
+      "Don't ship fabricated precision — invented benchmark numbers, decorative metrics, or a populated-looking dashboard no code produced.",
+      "Don't add a box-shadow. Anywhere. If it casts a shadow, it is not on the sheet.",
+      "Don't add border-radius between 0 and 50%. There is no 12px card in this system.",
+      "Don't put a coloured stripe on one edge of a card or callout via border-left.",
+      "Don't render text below 14px, and don't set font sizes in px.",
+      "Don't use gradient text (background-clip: text), glassmorphism, or a blur as decoration.",
+      "Don't repeat a small uppercase kicker above every section. One per route.",
+      "Don't number sections 01 / 02 / 03 unless the content genuinely is an ordered sequence.",
+      "Don't let colour be the sole carrier of state. Pair it with text, weight, or shape."
+    ]
+  }
+}
