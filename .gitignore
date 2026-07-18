@@ -162,3 +162,29 @@ dmypy.json
 # Exported model artifacts
 /models/
 
+
+
+
+
+
+
+
+
+/[Aa]ssets/AssetStoreTools*
+[Ll]ibrary/
+[Tt]mp/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+/[Vv]ersioning/
+.plastic/
+UserSettings/
+**/*.csproj
+**/*.sln
+**/*.suo
+**/*.user
+**/*.unitypackage
+
