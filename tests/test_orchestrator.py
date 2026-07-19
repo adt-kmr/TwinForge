@@ -295,12 +295,28 @@ def test_reconstruct_refine_failure_is_a_400_and_fails_the_job(client, monkeypat
 
     monkeypatch.setattr(service, "refine_ply", _raise)
 
+    # _JOBS is module-level global state that persists across tests (no fixture resets
+    # it), and other tests in this file create unrelated stage="reconstruct",
+    # status="failed" jobs. Capture the exact job_id this request's own call to
+    # jobs.create_job() produces so the assertion below can't pass on leakage from a
+    # different test's job.
+    created_job_ids = []
+    real_create_job = jobs.create_job
+
+    def _create_job(stage):
+        job_id = real_create_job(stage)
+        created_job_ids.append(job_id)
+        return job_id
+
+    monkeypatch.setattr(jobs, "create_job", _create_job)
+
     scan_id = upload_scan(client)
     response = client.post(
         "/reconstruct", json={"scan_id": scan_id, "mode": "fast", "refine": True})
     assert response.status_code == 400
     assert "refine" in response.json()["detail"]
 
-    failed = [j for j in jobs.all_jobs()
-              if j["stage"] == "reconstruct" and j["status"] == "failed"]
-    assert failed, "refine failure must mark the job as failed, not leave it running"
+    assert len(created_job_ids) == 1
+    job = jobs.get_job(created_job_ids[0])
+    assert job["status"] == "failed", \
+        "refine failure must mark this request's own job as failed, not leave it running"
