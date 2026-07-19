@@ -31,6 +31,13 @@ export const scanStatus = (scanId) => send(`/capture/${scanId}`);
 // shared volume), not a browser-uploaded blob.
 export const captureImport = (scanId, exportPath) =>
   post(`/capture/${scanId}/import`, { export_path: exportPath });
+// Audio -> text only (Task 19); feed the returned text into plan() below to get a
+// task_graph_id -- /transcribe never touches Sarvam/FunctionGemma itself.
+export const transcribe = (audioFile, lang) => {
+  const form = new FormData();
+  form.append("file", audioFile);
+  return send(`/transcribe?lang=${encodeURIComponent(lang)}`, { method: "POST", body: form });
+};
 export const reconstruct = (scan_id, mode) => post("/reconstruct", { scan_id, mode });
 export const segment = (mesh_id) => post("/segment", { mesh_id });
 export const generateTwin = (mesh_id, objects_id) =>
