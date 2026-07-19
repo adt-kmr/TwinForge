@@ -21,7 +21,7 @@ them — check before building on top of one.
 ## Commands
 
 ```bash
-make install       # pip install -e sdk/ + requirements.txt
+make install       # pip install -e . + requirements.txt
 make install-dev   # + requirements-dev.txt + pre-commit install
 make lint          # flake8 + mypy over sdk/ orchestrator/ capture/ reconstruction/ semantic/ robot/ sarvam/ tests/
 make format        # black + isort over the same tree

@@ -171,7 +171,7 @@ export default function Landing() {
 
       <section className="band band--start" id="start" ref={startRef}>
         <aside className="notes" data-reveal>
-          <p>pip install -e sdk/</p>
+          <p>pip install -e .</p>
           <p>orchestrator :8000</p>
         </aside>
         <div className="band__body">

@@ -15,7 +15,7 @@ help:
 	@echo "  make clean         Remove build artifacts"
 
 install:
-	pip install -e sdk/
+	pip install -e .
 	pip install -r requirements.txt
 
 install-dev:
