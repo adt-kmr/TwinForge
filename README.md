@@ -1,7 +1,8 @@
 <div align="center">
 
 # DragVerse
-### Build Once. Deploy Anywhere. Train Robots Inside Their Own Digital Twin.
+### Build Once. Deploy Anywhere. Train Robots Inside Their Own Digital Twin. 
+
 
 <p align="center">
 An Edge-Native AI Platform for Automatic Digital Twin Generation, Reinforcement Learning, and Real-World Robot Deployment.
@@ -1275,7 +1276,7 @@ If you discover a security vulnerability, **please do not disclose it publicly i
 
 For questions, collaborations, or issues:
 ```
-team@email.com
+adtkmr.contact@gmail.com
 ```
 
 ---
