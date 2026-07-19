@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import { createScene, STAGES } from "./recon.js";
+import { createScene, STAGES, PLAN_LOG } from "./recon.js";
 import { createAperture } from "./aperture.js";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -24,6 +24,7 @@ export default function ReconCanvas() {
   const readoutRef = useRef(null);
   const pointsRef = useRef(null);
   const objectsRef = useRef(null);
+  const planRefs = useRef([]);
   const [phase, setPhase] = useState(0);
   const [atRest, setAtRest] = useState(true);
 
@@ -60,6 +61,12 @@ export default function ReconCanvas() {
       if (state.rest !== lastRest) {
         lastRest = state.rest;
         setAtRest(state.rest);
+      }
+      if (state.plan) {
+        state.plan.forEach((alpha, i) => {
+          const el = planRefs.current[i];
+          if (el) el.style.opacity = alpha;
+        });
       }
     };
 
@@ -150,7 +157,7 @@ export default function ReconCanvas() {
             <em>Get a robot that works in it.</em>
           </h1>
           <p className="lede">
-            TwinForge turns a walk-through scan into a simulation-ready twin, trains a policy
+            DragVerse turns a walk-through scan into a simulation-ready twin, trains a policy
             inside that twin, and ships a quantized artifact that runs on Snapdragon with the
             network off.
           </p>
@@ -162,6 +169,14 @@ export default function ReconCanvas() {
           <span className="recon__name">{name}</span>
           <span className="recon__note">{note}</span>
         </figcaption>
+
+        <div className="recon__plan" aria-live="polite">
+          {PLAN_LOG.map((line, i) => (
+            <span className="recon__plan-line" key={i} ref={(el) => (planRefs.current[i] = el)}>
+              {line}
+            </span>
+          ))}
+        </div>
 
         <div className="recon__readout" ref={readoutRef}>
           <div>
