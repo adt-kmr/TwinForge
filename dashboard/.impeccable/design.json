@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-07-19T00:00:00.000Z",
-  "title": "Design System: TwinForge",
+  "title": "Design System: DragVerse",
   "extensions": {
     "colorMeta": {
       "vellum": {
@@ -308,7 +308,7 @@
       "kind": "custom",
       "refersTo": "code-block",
       "description": "The SDK sample. The one dark surface in the system: graphite ground, square, no shadow.",
-      "html": "<pre class=\"ds-code\"><code><span class=\"k\">from</span> twinforge <span class=\"k\">import</span> TwinForge\n\ntf = TwinForge(<span class=\"s\">\"http://localhost:8000\"</span>)</code></pre>",
+      "html": "<pre class=\"ds-code\"><code><span class=\"k\">from</span> dragverse <span class=\"k\">import</span> DragVerse\n\ntf = DragVerse(<span class=\"s\">\"http://localhost:8000\"</span>)</code></pre>",
       "css": ".ds-code{margin:0;padding:1.4rem 1.5rem;overflow-x:auto;background:#12151a;color:#d8ded6;border-radius:0;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:1rem;line-height:1.75}.ds-code .k{color:#9aa6ff}.ds-code .s{color:#6fd9c4}"
     }
   ],

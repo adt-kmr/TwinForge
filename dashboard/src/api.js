@@ -1,4 +1,4 @@
-// Mocked api.js for TwinForge dashboard.
+// Mocked api.js for DragVerse dashboard.
 // These mock the backend orchestrator REST surface for a full frontend simulation.
 
 const delay = (ms) => new Promise(r => setTimeout(r, ms));
@@ -63,7 +63,7 @@ export const generateTwin = async (mesh_id, objects_id) => {
   return {
     twin_id: "twin_" + Date.now(),
     object_count: 5,
-    unity_scene_url: "unity://twinforge/scene_" + Date.now()
+    unity_scene_url: "unity://dragverse/scene_" + Date.now()
   };
 };
 

@@ -1,4 +1,4 @@
-"""TwinForge orchestrator — the single REST surface (blueprint section 16).
+"""DragVerse orchestrator — the single REST surface (blueprint section 16).
 
 Stage modules are imported directly rather than called over HTTP: one process, one
 SQLite metadata store, every call recorded as a job. Execution is synchronous, which is
@@ -26,7 +26,7 @@ from sarvam.task_engine.provider import get_planner
 from semantic.service.inference import segment_points
 from twin.generator import generate_twin, nearest_free
 
-app = FastAPI(title="TwinForge Orchestrator", version="2.0")
+app = FastAPI(title="DragVerse Orchestrator", version="2.0")
 
 OBS_DIM = ACT_DIM = 2  # (dx, dy) -> (step_x, step_y); see policy/evaluate.py
 

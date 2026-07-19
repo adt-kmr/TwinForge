@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: TwinForge API
+  title: DragVerse API
   version: 0.1.0
 paths:
   /capture/{session_id}:

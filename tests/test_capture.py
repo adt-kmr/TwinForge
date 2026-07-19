@@ -6,7 +6,7 @@ from capture.service.app import app
 
 @pytest.fixture()
 def client(tmp_path, monkeypatch):
-    monkeypatch.setenv("TWINFORGE_DATA", str(tmp_path))
+    monkeypatch.setenv("DRAGVERSE_DATA", str(tmp_path))
     return TestClient(app)
 
 

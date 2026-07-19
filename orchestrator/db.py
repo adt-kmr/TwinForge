@@ -4,7 +4,7 @@ import re
 import sqlite3
 import uuid
 
-DB_PATH = os.environ.get("TWINFORGE_DB", "data/twinforge.db")
+DB_PATH = os.environ.get("DRAGVERSE_DB", "data/dragverse.db")
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS teams(

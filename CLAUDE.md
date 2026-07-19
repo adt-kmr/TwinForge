@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-TwinForge is an edge-first Physical AI pipeline: point a phone at a space and get a
+DragVerse is an edge-first Physical AI pipeline: point a phone at a space and get a
 simulation-ready digital twin, a robot taught by voice, and a policy that runs offline on
 Snapdragon silicon. The full loop is **capture → reconstruct → semantic-label → generate
 twin → adapt policy → edge-optimize → deploy**, exposed as one REST API (orchestrator) and
@@ -43,10 +43,10 @@ Dashboard (React/Vite, `dashboard/`): `npm install && npm run dev`.
 
 - `pyproject.toml` packages from `sdk/` (the real source tree); `setup.cfg` and
   `.github/workflows/ci.yml` reference a `src/` tree and `main.py`/`__main__.py` that don't
-  exist anywhere in the repo. `tests/test_main.py` imports `twinforge.__main__`, which is
+  exist anywhere in the repo. `tests/test_main.py` imports `dragverse.__main__`, which is
   also missing. Treat `setup.cfg` and the CI workflow as stale/aspirational, not ground
   truth, until reconciled.
-- `sdk/twinforge/__init__.py` is empty even though `client.py`'s `TwinForge` class and
+- `sdk/dragverse/__init__.py` is empty even though `client.py`'s `DragVerse` class and
   `README.md`'s usage example (`tf.capture()`, `tf.reconstruct()`, ...) imply it's the
   package's public surface.
 
@@ -55,7 +55,7 @@ Dashboard (React/Vite, `dashboard/`): `npm install && npm run dev`.
 One Python package per pipeline stage, each independently deployable as a service/module.
 Directory names ARE the architecture:
 
-- `sdk/twinforge/` — pip-installable client (`TwinForge` class in `client.py`); each method
+- `sdk/dragverse/` — pip-installable client (`DragVerse` class in `client.py`); each method
   (`capture`, `reconstruct`, `train`, `deploy`) is a thin wrapper that builds a URL string
   against a FastAPI backend — no HTTP calls are actually wired up yet.
 - `orchestrator/` — pipeline state machine (`pipeline.py`: `PipelineState` enum
@@ -71,7 +71,7 @@ Directory names ARE the architecture:
   maps to Unity prefabs + collider types.
 - `twin/rules/mapping.yaml` — label → prefab/collider mapping consumed by the (not yet
   present) `twin/unity_project/` batch-mode generator.
-- `robot/adapters/` — `TwinForgeRobot` ABC (`base.py`) with `SimRobot` and `UnoQRobot`
+- `robot/adapters/` — `DragVerseRobot` ABC (`base.py`) with `SimRobot` and `UnoQRobot`
   implementations; this is the seam for swapping simulated vs. physical robot backends.
 - `sarvam/task_engine/` — `TaskProvider` ABC for NL→task-graph planning; `fallback.py`'s
   `FunctionGemma` is the on-device fallback used when `SARVAM_API_KEY` is unset (online

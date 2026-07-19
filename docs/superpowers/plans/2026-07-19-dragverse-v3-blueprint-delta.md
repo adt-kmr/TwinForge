@@ -1,8 +1,8 @@
-# TwinForge v3 Blueprint Delta Implementation Plan
+# DragVerse v3 Blueprint Delta Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Bring the already-complete v2 pipeline (81/81 tests passing, every stage real per `docs/superpowers/plans/2026-07-18-twinforge-v2-implementation.md`) in line with `TwinForge_Implementation_Blueprint_v3.pdf`: Scaniverse-fed splat capture, ArUco coordinate alignment, on-policy RL training via Unity ML-Agents, and a 6-step guided web wizard that replaces the SDK as the product's front door.
+**Goal:** Bring the already-complete v2 pipeline (81/81 tests passing, every stage real per `docs/superpowers/plans/2026-07-18-dragverse-v2-implementation.md`) in line with `DragVerse_Implementation_Blueprint_v3.pdf`: Scaniverse-fed splat capture, ArUco coordinate alignment, on-policy RL training via Unity ML-Agents, and a 6-step guided web wizard that replaces the SDK as the product's front door.
 
 **Architecture:** No change to the orchestrator-owns-SQLite-and-stage-modules design. Every new piece (ArUco detector, splat refiner, ML-Agents bridge) is added as one more lazy-imported optional backend behind an interface with an honest fallback — the same pattern `open3d`/`ultralytics`/`pyserial`/`qai_hub` already use. The wizard is new dashboard routes calling orchestrator endpoints that mostly already exist.
 
@@ -26,7 +26,7 @@ Confirmed by direct inspection, not assumption:
 | `capture/service/app.py`, `store.py` | Real, chunked-upload model |
 | `twin/generator.py` | Real, 98% coverage; `twins.anchor_transform_json` DB column exists **but nothing ever writes it** |
 | `policy/finetune/train_bc.py`, `policy/evaluate.py` | Real BC + grid-world sim gate (`SIM_GATE`) |
-| `sdk/twinforge/client.py` | Real, 8 verbs, 82% coverage |
+| `sdk/dragverse/client.py` | Real, 8 verbs, 82% coverage |
 | `orchestrator/service.py` | Real, all §16 endpoints + `/benchmarks`, `/ws/status` (beyond old plan) |
 | `sarvam/task_engine/` | Real (Sarvam + FunctionGemma), text-only — **no audio/Whisper anywhere** |
 | `robot/adapters/` | Real (`sim.py`, `unoq.py` with Bridge RPC pattern, `registry.py`) |
@@ -66,11 +66,11 @@ Tests: `connect()` with no `aruco_image_path` behaves exactly as before (existin
 
 ## Phase B — Scaniverse-fed capture & splat refinement
 
-v3 §4 is explicit: don't build a splat trainer from scratch. Scaniverse (external app) does capture; TwinForge's job is to **ingest its export** and run a thin, honestly-scoped refinement pass whose *neural* inputs (depth/pose/segmentation) are AI-Hub-exported models, while the splat optimization itself is out of scope for this milestone (§4: "GPU/Adreno workload... this milestone" caveat — recommend not claiming it, matching the doc's own honesty framing).
+v3 §4 is explicit: don't build a splat trainer from scratch. Scaniverse (external app) does capture; DragVerse's job is to **ingest its export** and run a thin, honestly-scoped refinement pass whose *neural* inputs (depth/pose/segmentation) are AI-Hub-exported models, while the splat optimization itself is out of scope for this milestone (§4: "GPU/Adreno workload... this milestone" caveat — recommend not claiming it, matching the doc's own honesty framing).
 
 ### Task 5 (B1): `capture/scaniverse.py` — ingestion
 Files: create `capture/scaniverse.py`, test `tests/test_scaniverse.py`.
-- Scaniverse exports `.ply` (point cloud, already TwinForge's native format via `reconstruction.reconstruct.read_ply`) or `.glb` (mesh). `ingest_export(path: str, scan_dir: str) -> dict` — for `.ply`, copies straight into `scan_dir/scaniverse.ply` and returns `{"ply_path", "point_count", "source": "scaniverse"}` (reuse `reconstruction.reconstruct.read_ply` to get the count — no new parser). For `.glb`, lazy-import `pygltflib`... **skip `.glb` for this milestone** — raise `NotImplementedError("glb import not yet supported; export PLY from Scaniverse")`. Keep scope to what's testable without a new heavy dependency.
+- Scaniverse exports `.ply` (point cloud, already DragVerse's native format via `reconstruction.reconstruct.read_ply`) or `.glb` (mesh). `ingest_export(path: str, scan_dir: str) -> dict` — for `.ply`, copies straight into `scan_dir/scaniverse.ply` and returns `{"ply_path", "point_count", "source": "scaniverse"}` (reuse `reconstruction.reconstruct.read_ply` to get the count — no new parser). For `.glb`, lazy-import `pygltflib`... **skip `.glb` for this milestone** — raise `NotImplementedError("glb import not yet supported; export PLY from Scaniverse")`. Keep scope to what's testable without a new heavy dependency.
 Tests: write a small synthetic PLY (reuse `reconstruction.reconstruct.write_ply` from existing tests), ingest it, assert `point_count` matches and file lands at the expected path. `.glb` path asserts `NotImplementedError`.
 
 ### Task 6 (B2): `POST /capture` gains a Scaniverse path
@@ -176,7 +176,7 @@ Files: create `examples/elevator_lobby/demo.py` (or extend an existing `examples
 Tests: one integration test running the script's pipeline function against the `TestClient` app (reuses the existing full-pipeline test's fixtures), asserting it completes without the RL path being required (falls back to `'bc'` gracefully, per Task C3).
 
 ### Task 24 (E2): SDK/README framing (no code change)
-Files: `README.md`, `sdk/twinforge/client.py` docstring only.
+Files: `README.md`, `sdk/dragverse/client.py` docstring only.
 - Add a note per v3 §11: the SDK is the orchestrator's internal client, not the primary product surface as of v3 — point readers at `/wizard`. No signature changes.
 
 ### Task 25 (E3): full-suite regression + wrap-up

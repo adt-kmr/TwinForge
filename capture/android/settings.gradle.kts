@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TwinForgeCapture"
+rootProject.name = "DragVerseCapture"
 include(":app")

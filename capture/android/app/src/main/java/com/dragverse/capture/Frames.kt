@@ -1,4 +1,4 @@
-package com.twinforge.capture
+package com.dragverse.capture
 
 import android.media.Image
 import com.google.ar.core.Camera
@@ -12,7 +12,7 @@ import com.google.ar.core.CameraIntrinsics
  *
  *  1. Camera basis. ARCore's camera looks down -Z with +Y up; the pinhole model in
  *     `backproject()` looks down +Z with +Y down. That is a flip of Y and Z.
- *  2. World basis. ARCore's world is Y-up; the TwinForge map frame is Z-up,
+ *  2. World basis. ARCore's world is Y-up; the DragVerse map frame is Z-up,
  *     right-handed, metres. So (x, y, z)_arcore -> (x, -z, y)_map.
  */
 object Frames {

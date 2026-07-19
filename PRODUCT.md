@@ -15,7 +15,7 @@ tolerance for technical density (endpoint signatures, return shapes, thresholds)
 
 ## Product Purpose
 
-TwinForge is an edge-first Physical AI pipeline: point a phone at a space and get a
+DragVerse is an edge-first Physical AI pipeline: point a phone at a space and get a
 simulation-ready digital twin, a robot taught by voice, and a policy that runs offline on
 Snapdragon silicon. The landing page (`Landing.jsx`) is the primary surface — it exists to
 prove the eight-call pipeline (capture → reconstruct → segment → generate twin → plan →

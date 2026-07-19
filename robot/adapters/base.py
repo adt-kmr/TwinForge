@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 MAX_LINEAR_SPEED = 0.5  # m/s
 
 
-class TwinForgeRobot(ABC):
+class DragVerseRobot(ABC):
     """The seam between the pipeline and whatever is actually driving — sim or metal."""
 
     @abstractmethod

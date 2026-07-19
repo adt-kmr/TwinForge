@@ -43,7 +43,7 @@ const TIERS = [
 // ponytail: streamlined workflow steps focused on user onboarding perspective
 const SCANIVERSE_STEPS = [
   ["01", "Capture Space (Scaniverse)", "Scan your physical room or environment using Scaniverse on your mobile device and export the scan as a .ply or .obj file.", "User Action: Scaniverse App → Export PLY/OBJ"],
-  ["02", "Onboard & Import Scan", "Open the TwinForge dashboard, set up your project workspace, and drag-and-drop your exported Scaniverse 3D file.", "User Action: Workspace Onboarding → Upload Scan"],
+  ["02", "Onboard & Import Scan", "Open the DragVerse dashboard, set up your project workspace, and drag-and-drop your exported Scaniverse 3D file.", "User Action: Workspace Onboarding → Upload Scan"],
   ["03", "Verify 3D Segmentation", "Inspect auto-detected floor planes and clustered 3D objects with interactive AI semantic labels.", "User Action: Review 3D Scene & Object Labels"],
   ["04", "Generate Digital Twin", "Convert labeled objects into a 1:1 simulation environment in Unity, complete with physics colliders.", "User Action: Generate Physics-Ready Twin"],
   ["05", "Instruct Task & Train", "Specify the robot's objective using voice or text prompts, then run RL policy training in simulation.", "User Action: Voice/Text Prompt → Train Policy"],
@@ -178,9 +178,9 @@ export default function Landing() {
           <h2 className="title" data-reveal>The whole loop is one method.</h2>
           <pre className="code" data-reveal>
             <code>
-              <span className="c-k">from</span> twinforge <span className="c-k">import</span> TwinForge
+              <span className="c-k">from</span> dragverse <span className="c-k">import</span> DragVerse
               {"\n\n"}
-              tf = TwinForge(<span className="c-s">"http://localhost:8000"</span>)
+              tf = DragVerse(<span className="c-s">"http://localhost:8000"</span>)
               {"\n"}
               result = tf.run_pipeline(
               {"\n    "}frames,
@@ -196,7 +196,7 @@ export default function Landing() {
             <Link className="btn btn--solid" to="/dashboard">
               Open the console
             </Link>
-            <a className="btn" href="https://github.com/adt-kmr/TwinForge">
+            <a className="btn" href="https://github.com/adt-kmr/DragVerse">
               Read the source
             </a>
           </div>

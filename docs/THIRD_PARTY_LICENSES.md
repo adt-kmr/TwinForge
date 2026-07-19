@@ -1,6 +1,6 @@
 # Third-Party Components & Licensing
 
-TwinForge's own code is MIT-licensed (see [`LICENSE`](../LICENSE)). It builds on the
+DragVerse's own code is MIT-licensed (see [`LICENSE`](../LICENSE)). It builds on the
 following open-source and vendor-SDK components. This list is maintained per Section 26
 of the [system design blueprint](../detailed%20implementation%20doc.md).
 

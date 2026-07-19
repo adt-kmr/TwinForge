@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/logo.png" width="200" alt="DragVerse Cyclone Logo" />
+
 # DragVerse
 
 ### Build Once. Deploy Anywhere. Train Robots Inside Their Own Digital Twin
@@ -36,32 +38,19 @@ Instead of spending days creating simulation scenes, navigation maps, reward env
 
 The result is a complete end-to-end pipeline:
 
-```
-Real World
-      |
-      ▼
-3D Capture
-      |
-      ▼
-Digital Twin Generation
-      |
-      ▼
-Semantic Scene Understanding
-      |
-      ▼
-Unity RL Environment
-      |
-      ▼
-Policy Training
-      |
-      ▼
-Model Optimization
-      |
-      ▼
-Edge Deployment
-      |
-      ▼
-Autonomous Robot
+```mermaid
+flowchart TD
+    A[🌍 Real World] --> B[📱 3D Capture]
+    B --> C[🏗️ Digital Twin Generation]
+    C --> D[🧠 Semantic Scene Understanding]
+    D --> E[🎮 Unity RL Environment]
+    E --> F[🤖 Policy Training]
+    F --> G[⚡ Model Optimization]
+    G --> H[🚀 Edge Deployment]
+    H --> I[🦾 Autonomous Robot]
+    
+    style A fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px,color:#000
+    style I fill:#e8f5e9,stroke:#4caf50,stroke-width:2px,color:#000
 ```
 
 The entire workflow is orchestrated through a simple guided web application while the majority of AI inference runs locally on Qualcomm-powered edge hardware.
@@ -190,18 +179,16 @@ DragVerse intentionally hides robotics complexity.
 
 Instead of interacting with SDKs or command-line interfaces, users complete a six-step guided workflow.
 
-```
-Capture
-      ↓
-Choose Robot
-      ↓
-Choose AI Model
-      ↓
-Speak Instruction
-      ↓
-Choose Activity
-      ↓
-Deploy
+```mermaid
+flowchart LR
+    A([📸 Capture]) --> B([🤖 Choose Robot])
+    B --> C([🧠 Choose AI Model])
+    C --> D([🎙️ Speak Instruction])
+    D --> E([🎯 Choose Activity])
+    E --> F([🚀 Deploy])
+    
+    style A fill:#f3e5f5,stroke:#9c27b0,color:#000
+    style F fill:#e8f5e9,stroke:#4caf50,color:#000
 ```
 
 Designed to be approachable, even if you are new to robotics.
@@ -241,46 +228,41 @@ onto Qualcomm-powered edge hardware.
 
 # High-Level System Architecture
 
-```
-                 ┌──────────────────────┐
-                 │ Smartphone Capture   │
-                 │  (OnePlus Device)    │
-                 └──────────┬───────────┘
-                            │
-                            ▼
-             ┌──────────────────────────┐
-             │ Scene Reconstruction      │
-             └──────────┬───────────────┘
-                        │
-                        ▼
-         ┌────────────────────────────────┐
-         │ Semantic Scene Understanding   │
-         └──────────┬─────────────────────┘
-                    │
-                    ▼
-          ┌────────────────────────────┐
-          │ Digital Twin Generator     │
-          └──────────┬─────────────────┘
-                     │
-                     ▼
-         ┌─────────────────────────────────┐
-         │ [Unity ML-Agents](https://github.com/Unity-Technologies/ml-agents) Environment │
-         └──────────┬──────────────────────┘
-                    │
-                    ▼
-          PPO Reinforcement Learning
-                    │
-                    ▼
-             ONNX Policy Export
-                    │
-                    ▼
-        Qualcomm AI Hub Optimization
-                    │
-                    ▼
-        Arduino UNO Q Edge Deployment
-                    │
-                    ▼
-           Autonomous Robot Execution
+```mermaid
+flowchart TD
+    subgraph Capture["📱 Input & Capture"]
+        A["Smartphone Capture<br/><i>(OnePlus Device)</i>"]
+    end
+
+    subgraph Pipeline["🏭 Core Pipeline"]
+        B[Scene Reconstruction]
+        C[Semantic Scene Understanding]
+        D[Digital Twin Generator]
+    end
+
+    subgraph Training["🤖 AI & Training"]
+        E[Unity ML-Agents Environment]
+        F[PPO Reinforcement Learning]
+        G[ONNX Policy Export]
+    end
+
+    subgraph Edge["⚡ Edge Execution"]
+        H[Qualcomm AI Hub Optimization]
+        I[Arduino UNO Q Edge Deployment]
+        J((Autonomous Robot Execution))
+    end
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+
+    style J fill:#4caf50,stroke:#388e3c,stroke-width:4px,color:#fff
 ```
 
 ---
@@ -879,29 +861,18 @@ Click `Deploy to Robot`. The optimized policy is pushed onto the robot, where in
 
 # Performance Pipeline
 
-```
-Capture
-    │
-    ▼
-Preprocessing
-    │
-    ▼
-Reconstruction
-    │
-    ▼
-Twin Generation
-    │
-    ▼
-RL Training
-    │
-    ▼
-ONNX Export
-    │
-    ▼
-QAIRT Optimization
-    │
-    ▼
-Edge Deployment
+```mermaid
+flowchart TD
+    A([📸 Capture]) --> B[⚙️ Preprocessing]
+    B --> C[🏗️ Reconstruction]
+    C --> D[🏭 Twin Generation]
+    D --> E[🤖 RL Training]
+    E --> F[📦 ONNX Export]
+    F --> G[⚡ QAIRT Optimization]
+    G --> H([🚀 Edge Deployment])
+    
+    style A fill:#e3f2fd,stroke:#2196f3,color:#000
+    style H fill:#e8f5e9,stroke:#4caf50,color:#000
 ```
 
 ---
@@ -1437,7 +1408,7 @@ If DragVerse contributes to your research, please cite it.
   title={DragVerse: Automatic Digital Twin Generation and Edge Reinforcement Learning Platform},
   author={Team Ghost Map},
   year={2026},
-  url={https://github.com/adt-kmr/TwinForge}
+  url={https://github.com/adt-kmr/DragVerse}
 }
 ```
 

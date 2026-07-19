@@ -1,7 +1,7 @@
-"""Ingest scan exports (Scaniverse and friends) into TwinForge's PLY pipeline.
+"""Ingest scan exports (Scaniverse and friends) into DragVerse's PLY pipeline.
 
 Scaniverse is an external phone-side capture app. Its exports arrive as:
-- `.ply` point clouds — TwinForge's native format, but usually *binary*, not ASCII.
+- `.ply` point clouds — DragVerse's native format, but usually *binary*, not ASCII.
 - `.obj` meshes — geometry taken as a point cloud; MTL/textures are ignored.
 - `.glb` / `.usdz` — not supported (see ingest_export).
 

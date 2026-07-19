@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-07-19T00:00:00Z",
-  "title": "Design System: TwinForge",
+  "title": "Design System: DragVerse",
   "extensions": {
     "colorMeta": {
       "vellum": { "role": "neutral", "displayName": "Vellum", "canonical": "oklch(93.9% 0.012 118)" },
@@ -77,7 +77,7 @@
   ],
   "narrative": {
     "northStar": "The Depth Sheet",
-    "overview": "TwinForge is styled as a survey sheet — the printout an instrument produces, not a marketing page describing one. The palette is lifted directly from a depth sensor's own colormap: far is indigo, mid is teal, near is hot orange. Colour is spent only where the system is actively sensing or computing right now, so it reads as telemetry rather than decoration. Registration marks in the corners, a masthead with live metadata, hairline rules, and monospace figures for anything the machine measured — the page presents itself as an output of the pipeline, not a pitch for it.",
+    "overview": "DragVerse is styled as a survey sheet — the printout an instrument produces, not a marketing page describing one. The palette is lifted directly from a depth sensor's own colormap: far is indigo, mid is teal, near is hot orange. Colour is spent only where the system is actively sensing or computing right now, so it reads as telemetry rather than decoration. Registration marks in the corners, a masthead with live metadata, hairline rules, and monospace figures for anything the machine measured — the page presents itself as an output of the pipeline, not a pitch for it.",
     "keyCharacteristics": [
       "A measured colormap, not a brand palette — colour = sensor state, not taste",
       "Flat, hairline-ruled surfaces; a survey sheet has no elevation",

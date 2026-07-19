@@ -1,4 +1,4 @@
-# TwinForge capture companion (Android / ARCore)
+# DragVerse capture companion (Android / ARCore)
 
 Streams ARCore depth frames to the orchestrator's `POST /capture` as `.npz` chunks — the
 exact format `reconstruction/fast_path/fusion.py` back-projects (`depth` in metres,

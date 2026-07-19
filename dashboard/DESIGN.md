@@ -1,5 +1,5 @@
 ---
-name: TwinForge
+name: DragVerse
 description: A survey sheet for an edge-first Physical AI pipeline — flat, hairline-ruled, and coloured by a depth sensor's own ramp.
 colors:
   vellum: "#eef0ea"
@@ -121,7 +121,7 @@ components:
     padding: "1.4rem 1.5rem"
 ---
 
-# Design System: TwinForge
+# Design System: DragVerse
 
 ## 1. Overview
 

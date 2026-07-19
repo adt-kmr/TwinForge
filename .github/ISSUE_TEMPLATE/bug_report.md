@@ -22,7 +22,7 @@ A clear and concise description of what you expected to happen.
 **Environment:**
 - OS: [e.g. Windows, Linux, macOS]
 - Python version: [e.g. 3.10, 3.11]
-- TwinForge version: [e.g. 0.1.0]
+- DragVerse version: [e.g. 0.1.0]
 
 **Additional context**
 Add any other context about the problem here.

@@ -1,5 +1,5 @@
 ---
-name: TwinForge
+name: DragVerse
 description: Edge-first Physical AI pipeline — capture, reconstruct, and deploy a digital twin, styled as a survey instrument reading its own depth data.
 colors:
   vellum: "#eef0ea"
@@ -72,13 +72,13 @@ components:
     textColor: "{colors.vellum}"
 ---
 
-# Design System: TwinForge
+# Design System: DragVerse
 
 ## 1. Overview
 
 **Creative North Star: "The Depth Sheet"**
 
-TwinForge is styled as a survey sheet — the printout an instrument produces, not a
+DragVerse is styled as a survey sheet — the printout an instrument produces, not a
 marketing page describing one. The palette is lifted directly from a depth sensor's own
 colormap: far is indigo, mid is teal, near is hot orange. Colour is spent only where the
 system is actively sensing or computing right now, so it reads as telemetry rather than

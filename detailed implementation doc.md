@@ -1,66 +1,66 @@
-## TwinForge System Design Blueprint v2
+## DragVerse System Design Blueprint v2
 
 Snapdragon Multiverse Hackathon, Noida | System Design Blueprint v2 (Reviewed)
 
 July 2026
 
-- [0. Reviewer’s Note: What Changed From v1 and Why](file:///home/claude/twinforge/blueprint.html#reviewers-note-what-changed-from-v1-and-why)
+- [0. Reviewer’s Note: What Changed From v1 and Why](file:///home/claude/dragverse/blueprint.html#reviewers-note-what-changed-from-v1-and-why)
 
-- [1. Vision & Product Positioning](file:///home/claude/twinforge/blueprint.html#vision-product-positioning)
+- [1. Vision & Product Positioning](file:///home/claude/dragverse/blueprint.html#vision-product-positioning)
 
-- [2. Problem Statement](file:///home/claude/twinforge/blueprint.html#problem-statement)
+- [2. Problem Statement](file:///home/claude/dragverse/blueprint.html#problem-statement)
 
-- [3. Pipeline Landscape: Qualcomm/Edge vs. Cloud‑Centric Robotics Stacks](file:///home/claude/twinforge/blueprint.html#pipeline-landscape-qualcommedge-vs.-cloudcentric-robotics-stacks)
+- [3. Pipeline Landscape: Qualcomm/Edge vs. Cloud‑Centric Robotics Stacks](file:///home/claude/dragverse/blueprint.html#pipeline-landscape-qualcommedge-vs.-cloudcentric-robotics-stacks)
 
-- [4. Qualcomm Ecosystem Alignment](file:///home/claude/twinforge/blueprint.html#qualcomm-ecosystem-alignment)
+- [4. Qualcomm Ecosystem Alignment](file:///home/claude/dragverse/blueprint.html#qualcomm-ecosystem-alignment)
 
-- [5. OnePlus, CodeMate, and Sarvam Integration](file:///home/claude/twinforge/blueprint.html#oneplus-codemate-and-sarvam-integration)
+- [5. OnePlus, CodeMate, and Sarvam Integration](file:///home/claude/dragverse/blueprint.html#oneplus-codemate-and-sarvam-integration)
 
-- [6. End‑to‑End System Architecture](file:///home/claude/twinforge/blueprint.html#endtoend-system-architecture)
+- [6. End‑to‑End System Architecture](file:///home/claude/dragverse/blueprint.html#endtoend-system-architecture)
 
-- [7. Detailed Sequence Diagram](file:///home/claude/twinforge/blueprint.html#detailed-sequence-diagram)
+- [7. Detailed Sequence Diagram](file:///home/claude/dragverse/blueprint.html#detailed-sequence-diagram)
 
-- [8. Component‑by‑Component Design](file:///home/claude/twinforge/blueprint.html#componentbycomponent-design)
+- [8. Component‑by‑Component Design](file:///home/claude/dragverse/blueprint.html#componentbycomponent-design)
 
-- [9. Data Flow Diagram](file:///home/claude/twinforge/blueprint.html#data-flow-diagram)
+- [9. Data Flow Diagram](file:///home/claude/dragverse/blueprint.html#data-flow-diagram)
 
-- [10. World Coordinate System & Localization](file:///home/claude/twinforge/blueprint.html#world-coordinate-system-localization)
+- [10. World Coordinate System & Localization](file:///home/claude/dragverse/blueprint.html#world-coordinate-system-localization)
 
-- [11. Sim‑to‑Real Pipeline](file:///home/claude/twinforge/blueprint.html#simtoreal-pipeline)
+- [11. Sim‑to‑Real Pipeline](file:///home/claude/dragverse/blueprint.html#simtoreal-pipeline)
 
-- [12. RL / Policy‑Learning Pipeline](file:///home/claude/twinforge/blueprint.html#rl-policylearning-pipeline)
+- [12. RL / Policy‑Learning Pipeline](file:///home/claude/dragverse/blueprint.html#rl-policylearning-pipeline)
 
-- [13. Robot Deployment](file:///home/claude/twinforge/blueprint.html#robot-deployment)
+- [13. Robot Deployment](file:///home/claude/dragverse/blueprint.html#robot-deployment)
 
-- [14. Edge AI Optimization (Qualcomm AI Hub / QAIRT)](file:///home/claude/twinforge/blueprint.html#edge-ai-optimization-qualcomm-ai-hub-qairt)
+- [14. Edge AI Optimization (Qualcomm AI Hub / QAIRT)](file:///home/claude/dragverse/blueprint.html#edge-ai-optimization-qualcomm-ai-hub-qairt)
 
-- [15. Repository Structure](file:///home/claude/twinforge/blueprint.html#repository-structure)
+- [15. Repository Structure](file:///home/claude/dragverse/blueprint.html#repository-structure)
 
-- [16. API Specification (Orchestrator REST Surface)](file:///home/claude/twinforge/blueprint.html#api-specification-orchestrator-rest-surface)
+- [16. API Specification (Orchestrator REST Surface)](file:///home/claude/dragverse/blueprint.html#api-specification-orchestrator-rest-surface)
 
-- [17. Folder Structure, UML, and DB Schema](file:///home/claude/twinforge/blueprint.html#folder-structure-uml-and-db-schema)
+- [17. Folder Structure, UML, and DB Schema](file:///home/claude/dragverse/blueprint.html#folder-structure-uml-and-db-schema)
 
-- [17.1 Core Class Diagram (text form)](file:///home/claude/twinforge/blueprint.html#core-class-diagram-text-form)
+- [17.1 Core Class Diagram (text form)](file:///home/claude/dragverse/blueprint.html#core-class-diagram-text-form)
 
-- [17.2 DB Schema (Postgres/SQLite — shared metadata store)](file:///home/claude/twinforge/blueprint.html#db-schema-postgressqlite-shared-metadata-store)
+- [17.2 DB Schema (Postgres/SQLite — shared metadata store)](file:///home/claude/dragverse/blueprint.html#db-schema-postgressqlite-shared-metadata-store)
 
-- [18. ROS2 and Unity Project Structure](file:///home/claude/twinforge/blueprint.html#ros2-and-unity-project-structure)
+- [18. ROS2 and Unity Project Structure](file:///home/claude/dragverse/blueprint.html#ros2-and-unity-project-structure)
 
-- [19. SDK Design](file:///home/claude/twinforge/blueprint.html#sdk-design)
+- [19. SDK Design](file:///home/claude/dragverse/blueprint.html#sdk-design)
 
-- [20. Plugin Architecture](file:///home/claude/twinforge/blueprint.html#plugin-architecture)
+- [20. Plugin Architecture](file:///home/claude/dragverse/blueprint.html#plugin-architecture)
 
-- [21. Deployment Architecture](file:///home/claude/twinforge/blueprint.html#deployment-architecture)
+- [21. Deployment Architecture](file:///home/claude/dragverse/blueprint.html#deployment-architecture)
 
-- [22. Docker & Kubernetes (Optional)](file:///home/claude/twinforge/blueprint.html#docker-kubernetes-optional)
+- [22. Docker & Kubernetes (Optional)](file:///home/claude/dragverse/blueprint.html#docker-kubernetes-optional)
 
-- [23. Security Considerations](file:///home/claude/twinforge/blueprint.html#security-considerations)
+- [23. Security Considerations](file:///home/claude/dragverse/blueprint.html#security-considerations)
 
-- [24. Performance Targets](file:///home/claude/twinforge/blueprint.html#performance-targets)
+- [24. Performance Targets](file:///home/claude/dragverse/blueprint.html#performance-targets)
 
-- [25. Scalability](file:///home/claude/twinforge/blueprint.html#scalability)
+- [25. Scalability](file:///home/claude/dragverse/blueprint.html#scalability)
 
-- [26. Open‑Source Components Used & Licensing](file:///home/claude/twinforge/blueprint.html#opensource-components-used-licensing)
+- [26. Open‑Source Components Used & Licensing](file:///home/claude/dragverse/blueprint.html#opensource-components-used-licensing)
 
 ## 0. Reviewer’s Note: What Changed From v1 and Why
 
@@ -83,7 +83,7 @@ pipeline shape identical while making each stage buildable by two people in a fe
 | RL/diffusion scratch takes hours-to-days even in fast simulators. A live from‑scratch training. Ship a policy pretrained ahead of time |
 | policy live at a “watch it learn” demo will not converge in the demo (classical Nav2 planner for navigation is the safe baseline; a |
 | hackathon window. small pretrained PPO/diffusion‑policy checkpoint for a toy |
-| manipulation task is the stretch goal). TwinForge.train() |
+| manipulation task is the stretch goal). DragVerse.train() |
 | performs a short behaviour‑cloning fine‑tune on ~10 |
 | teleoperated demonstrations, which does visibly improve in |
 | minutes and is an honest thing to show judges. |
@@ -116,24 +116,24 @@ Everything below assumes these ten fixes. The pipeline stage names, the repo lay
 
 ## 1. Vision & Product Positioning
 
-TwinForge is an edge‑first Physical AI operating layer: point a phone at any real space, and within minutes get a simulation‑ready digital twin, a robot that can be taught a task by voice in any language, and a policy that runs — fully offline — on Snapdragon silicon.
+DragVerse is an edge‑first Physical AI operating layer: point a phone at any real space, and within minutes get a simulation‑ready digital twin, a robot that can be taught a task by voice in any language, and a policy that runs — fully offline — on Snapdragon silicon.
 
-The positioning bet is deliberate and matches where Qualcomm is pushing the industry: NVIDIA’s sim‑to‑real story (Isaac Sim, Omniverse, Jetson) is built around a cloud/workstation GPU compute model — heavy reconstruction and training happen on datacenter‑class hardware, and the edge device is mostly a thin inference client. TwinForge instead runs the entire pipeline — capture, semantic understanding, twin generation, adaptation, and deployment — on a phone, an AI PC, and a microcontroller‑class board, with the cloud used only optionally, for the heaviest one‑time reconstruction pass. That is the wedge: “digital twins and robot learning that don’t need a data-center,” aimed squarely at Qualcomm’s push into robotics/physical AI and gaming/simulation as an edge-compute story, not a cloud story.
+The positioning bet is deliberate and matches where Qualcomm is pushing the industry: NVIDIA’s sim‑to‑real story (Isaac Sim, Omniverse, Jetson) is built around a cloud/workstation GPU compute model — heavy reconstruction and training happen on datacenter‑class hardware, and the edge device is mostly a thin inference client. DragVerse instead runs the entire pipeline — capture, semantic understanding, twin generation, adaptation, and deployment — on a phone, an AI PC, and a microcontroller‑class board, with the cloud used only optionally, for the heaviest one‑time reconstruction pass. That is the wedge: “digital twins and robot learning that don’t need a data-center,” aimed squarely at Qualcomm’s push into robotics/physical AI and gaming/simulation as an edge-compute story, not a cloud story.
 
-TwinForge is not pitched as “a robot demo.” It is pitched as a developer platform — an SDK and a set of adapters — so that after the hackathon, anyone can plug in a new robot, a new simulator, or a new capture device by implementing a three‑method interface, without touching the pipeline.
+DragVerse is not pitched as “a robot demo.” It is pitched as a developer platform — an SDK and a set of adapters — so that after the hackathon, anyone can plug in a new robot, a new simulator, or a new capture device by implementing a three‑method interface, without touching the pipeline.
 
 ## 2. Problem Statement
 
 Robot onboarding into a new physical space today typically requires: manual CAD/mesh authoring or a professional 3D scan, hand‑placed collision geometry, hand‑tuned navigation meshes, and a task‑specific policy either hand‑coded or trained in a cloud simulator against a hand‑built scene — routinely a multi‑day-to-multi-week effort even for a single room, and it goes stale the moment furniture moves.
 
-TwinForge collapses “new environment → working, safe, task‑capable robot” from days/weeks to minutes, by automating capture → reconstruction → semantic labeling → simulation‑ready twin → policy adaptation → edge‑optimized deployment as one pipeline, callable as one SDK, running on commodity edge hardware rather than a cloud GPU cluster.
+DragVerse collapses “new environment → working, safe, task‑capable robot” from days/weeks to minutes, by automating capture → reconstruction → semantic labeling → simulation‑ready twin → policy adaptation → edge‑optimized deployment as one pipeline, callable as one SDK, running on commodity edge hardware rather than a cloud GPU cluster.
 
 
 ## 3. Pipeline Landscape: Qualcomm/Edge vs. Cloud‑Centric Robotics Stacks
 
-This is a fair comparison, not a takedown — the incumbent cloud pipelines are mature and powerful for their target use case (large fleets, heavy photorealistic sim, massive parallel RL). TwinForge targets a different, currently underserved point on the map: single‑environment, same‑day, offline‑capable onboarding.
+This is a fair comparison, not a takedown — the incumbent cloud pipelines are mature and powerful for their target use case (large fleets, heavy photorealistic sim, massive parallel RL). DragVerse targets a different, currently underserved point on the map: single‑environment, same‑day, offline‑capable onboarding.
 
-| Dimension | Cloud/Workstation‑GPU stacks (e.g. Isaac | TwinForge (Qualcomm edge‑first) |
+| Dimension | Cloud/Workstation‑GPU stacks (e.g. Isaac | DragVerse (Qualcomm edge‑first) |
 | --- | --- | --- |
 |   | Sim + Omniverse + cloud RL, typical of |   |
 |   | NVIDIA’s robotics stack) |   |
@@ -177,7 +177,7 @@ Every pipeline stage is mapped to a real Qualcomm asset from the developer guide
 
 ## 5. OnePlus, CodeMate, and Sarvam Integration
 
-OnePlus. The OnePlus 15 is not a generic “any Android phone” — it’s the actual capture instrument: Snapdragon 8 Elite NPU pre‑processing for depth/feature extraction, and its camera stack is the sole source of the raw RGB‑D+IMU stream. The capture/ module’s public interface (TwinForgeCapture SDK) is written against this device’s camera2/ARCore session so OnePlus’s hardware is structurally the entry point of the whole platform, not a swappable commodity — the demo narrative literally starts with “pick up the OnePlus 15.”
+OnePlus. The OnePlus 15 is not a generic “any Android phone” — it’s the actual capture instrument: Snapdragon 8 Elite NPU pre‑processing for depth/feature extraction, and its camera stack is the sole source of the raw RGB‑D+IMU stream. The capture/ module’s public interface (DragVerseCapture SDK) is written against this device’s camera2/ARCore session so OnePlus’s hardware is structurally the entry point of the whole platform, not a swappable commodity — the demo narrative literally starts with “pick up the OnePlus 15.”
 
 Sarvam. Sarvam owns the Task Engine: natural‑language (including Indic languages, matching Sarvam’s multilingual focus) → a structured, executable robot task graph (POST /plan). This is wired as a hybrid: Sarvam’s model handles the rich/ambiguous instructions when online (matches their scheduled “Edge and Hybrid Deployments” talk), and FunctionGemma on‑device handles a small fixed vocabulary of commands offline — a genuine edge‑hybrid story, not a token integration. Exact SDK/API names should
 
@@ -195,9 +195,9 @@ All eight services are independent processes behind one REST orchestrator (orche
 
 ## 8. Component‑by‑Component Design
 
-| Component Responsibility Built From (mostly pre-built) What we actually write Capture Service Grab RGB‑D+IMU+pose from ARCore (pose/depth), OpenCV Thin FastAPI wrapper + upload client OnePlus 15, chunk‑upload (encode) Reconstruction Service Mesh/point‑cloud from frames Open3D (TSDF, fast path), Orchestration script selecting backend, COLMAP + gsplat/nerfstudio GLB/USD export glue (fidelity path) Semantic Service Label + mask objects YOLO‑World, MobileSAM, (optional Label→ontology mapping, mask→3D OpenCLIP) via AI Hub‑compiled projection using capture depth INT8 Twin Generator Mesh+labels → Unity scene Unity Editor batch mode, Unity Rule engine: label → prefab/collider NavMesh API, Unity Robotics Hub primitive; scene assembly script (URDF importer) Robot/Sim Service Sim + real robot control ROS2, Nav2, MoveIt2, QIRP SDK Adapter classes (TwinForgeRobot), Bridge glue on UNO Q |
+| Component Responsibility Built From (mostly pre-built) What we actually write Capture Service Grab RGB‑D+IMU+pose from ARCore (pose/depth), OpenCV Thin FastAPI wrapper + upload client OnePlus 15, chunk‑upload (encode) Reconstruction Service Mesh/point‑cloud from frames Open3D (TSDF, fast path), Orchestration script selecting backend, COLMAP + gsplat/nerfstudio GLB/USD export glue (fidelity path) Semantic Service Label + mask objects YOLO‑World, MobileSAM, (optional Label→ontology mapping, mask→3D OpenCLIP) via AI Hub‑compiled projection using capture depth INT8 Twin Generator Mesh+labels → Unity scene Unity Editor batch mode, Unity Rule engine: label → prefab/collider NavMesh API, Unity Robotics Hub primitive; scene assembly script (URDF importer) Robot/Sim Service Sim + real robot control ROS2, Nav2, MoveIt2, QIRP SDK Adapter classes (DragVerseRobot), Bridge glue on UNO Q |
 | --- |
-| Policy/Learning BC fine‑tune + eval Stable Baselines3 / LeRobot / a train()/evaluate() thin wrapper, small pretrained diffusion‑policy demonstration recorder checkpoint Deployment Manager Quantize + push to NPU Qualcomm AI Hub, QAIRT, Export‑flag selection, op‑coverage check, onnxruntime‑QNN power‑profile picker Sarvam Task Engine NL → task graph Sarvam API (online) / Provider interface + graph schema + FunctionGemma+LiteRT‑LM fallback logic (offline) Orchestrator State machine across stages, — (this is genuinely bespoke) Pipeline state machine, job queue retries Continuous Sync Engine Diff old vs. new scan Open3D point‑cloud diff Change‑set table + manual “Rescan” trigger (v1 scope) Dashboard Visual pipeline status React + a charting lib Status board, device picker, demo controls SDK Public dev‑facing API — TwinForge.capture()/reconstruct()/... Python + REST wrapper |
+| Policy/Learning BC fine‑tune + eval Stable Baselines3 / LeRobot / a train()/evaluate() thin wrapper, small pretrained diffusion‑policy demonstration recorder checkpoint Deployment Manager Quantize + push to NPU Qualcomm AI Hub, QAIRT, Export‑flag selection, op‑coverage check, onnxruntime‑QNN power‑profile picker Sarvam Task Engine NL → task graph Sarvam API (online) / Provider interface + graph schema + FunctionGemma+LiteRT‑LM fallback logic (offline) Orchestrator State machine across stages, — (this is genuinely bespoke) Pipeline state machine, job queue retries Continuous Sync Engine Diff old vs. new scan Open3D point‑cloud diff Change‑set table + manual “Rescan” trigger (v1 scope) Dashboard Visual pipeline status React + a charting lib Status board, device picker, demo controls SDK Public dev‑facing API — DragVerse.capture()/reconstruct()/... Python + REST wrapper |
 
 ## 9. Data Flow Diagram
 
@@ -226,7 +226,7 @@ All eight services are independent processes behind one REST orchestrator (orche
 
 - 5. Sim validation gate: the fine‑tuned policy must clear a fixed success threshold in simulation (N/M successful episodes) before it is eligible for export — this gate is what makes “we didn’t just overfit to one demo” a defensible claim to judges.
 
-- 6. Transfer: identical ROS2 node graph runs in sim and on the real UNO Q‑driven rover; only the TwinForgeRobot adapter implementation changes (SimRobot vs. UnoQRobot), so “sim‑to‑real” is literally a one‑line adapter swap, not a re‑implementation.
+- 6. Transfer: identical ROS2 node graph runs in sim and on the real UNO Q‑driven rover; only the DragVerseRobot adapter implementation changes (SimRobot vs. UnoQRobot), so “sim‑to‑real” is literally a one‑line adapter swap, not a re‑implementation.
 
 ## 12. RL / Policy‑Learning Pipeline
 
@@ -234,9 +234,9 @@ All eight services are independent processes behind one REST orchestrator (orche
 
 - Manipulation/task tasks (stretch goal): behaviour cloning (not from‑scratch RL) on teleoperated demonstrations, using LeRobot’s training loop or Stable‑Baselines3’s imitation‑learning utilities against a small pretrained diffusion‑policy/ACT checkpoint.
 
-- TwinForge.train() is intentionally scoped as fine‑tune, not train‑from‑scratch: this is both the technically honest scope for 24 hours and — per the AI Hub guide — the only thing worth quantizing and deploying in that time.
+- DragVerse.train() is intentionally scoped as fine‑tune, not train‑from‑scratch: this is both the technically honest scope for 24 hours and — per the AI Hub guide — the only thing worth quantizing and deploying in that time.
 
-- Evaluation: TwinForge.evaluate() runs N sim episodes post‑fine‑tune and reports a success‑rate delta (before/after), which is the number shown on the dashboard and in the presentation.
+- Evaluation: DragVerse.evaluate() runs N sim episodes post‑fine‑tune and reports a success‑rate delta (before/after), which is the number shown on the dashboard and in the presentation.
 
 - Full from‑scratch RL (Isaac Lab‑style large‑scale parallel training) is explicitly listed as a Phase 5+ roadmap item, not claimed as working in the hackathon build.
 
@@ -293,7 +293,7 @@ All endpoints are also exposed one‑to‑one as SDK methods (Section 19).
 ## 17.1 Core Class Diagram (text form)
 
 ```
-TwinForgeSDK
+DragVerseSDK
 ├─ capture() -> Scan
 ├─ reconstruct(scan, mode) -> Twin
 ├─ segment(twin) -> list[SemanticObject]
@@ -302,17 +302,17 @@ TwinForgeSDK
 ├─ train(twin, task_graph, demos) -> Policy
 ├─ optimize(policy, device) -> DeployedArtifact
 └─ deploy(artifact, robot) -> Deployment
-TwinForgeRobot (abstract) TaskPlanner (abstract)
+DragVerseRobot (abstract) TaskPlanner (abstract)
 ├─ connect() ├─ plan(text, lang) -> TaskGraph
 ├─ get_pose() -> Pose SarvamPlanner : TaskPlanner
 └─ execute_path(path) FunctionGemmaPlanner : TaskPlanner
-├─ SimRobot : TwinForgeRobot
-└─ UnoQRobot : TwinForgeRobot
-TwinForgeSimulator (abstract)
+├─ SimRobot : DragVerseRobot
+└─ UnoQRobot : DragVerseRobot
+DragVerseSimulator (abstract)
 ├─ load_twin(twin)
 ├─ spawn_robot(robot)
 └─ step()
-└─ UnityROS2Sim : TwinForgeSimulator
+└─ UnityROS2Sim : DragVerseSimulator
 ```
 
 ## 17.2 DB Schema (Postgres/SQLite — shared metadata store)
@@ -340,11 +340,11 @@ ROS2 workspace (robot/ros2_ws/)
 
 ```
 src/
-├── twinforge_bringup/ # launch files, per-robot params
-├── twinforge_msgs/ # TaskGraph.msg, Waypoint.msg custom types
-├── twinforge_adapters/ # SimRobot / UnoQRobot nodes implementing TwinForgeRobot
-├── twinforge_nav/ # Nav2 config (costmap, planner, controller params)
-└── twinforge_bridge/ # thin node talking to the UNO Q Bridge over the app_bridge helper
+├── dragverse_bringup/ # launch files, per-robot params
+├── dragverse_msgs/ # TaskGraph.msg, Waypoint.msg custom types
+├── dragverse_adapters/ # SimRobot / UnoQRobot nodes implementing DragVerseRobot
+├── dragverse_nav/ # Nav2 config (costmap, planner, controller params)
+└── dragverse_bridge/ # thin node talking to the UNO Q Bridge over the app_bridge helper
 ```
 
 Standard map → odom → base_link TF tree; Nav2’s bt_navigator drives task execution from the TaskGraph translated into a sequence of NavigateToPose/FollowWaypoints actions.
@@ -353,7 +353,7 @@ Unity project (twin/unity_project/)
 
 ```
 Assets/
-├── TwinForge/
+├── DragVerse/
 │ ├── Editor/GenerateTwin.cs # batch-mode entry point (-executeMethod)
 │ ├── Prefabs/ # chair, door, shelf, machine, hazard, exit
 │ ├── Rules/LabelToPrefab.asset # ScriptableObject mapping semantic label -> prefab/collider
@@ -362,7 +362,7 @@ Assets/
 └── Scenes/Generated/{twin_id}.unity
 ```
 
-Twin generation runs headless via Unity -batchmode -executeMethod TwinForge.GenerateTwin.Run -sceneId {twin_id}, callable directly from the twin/ service — no manual Editor interaction needed at demo time.
+Twin generation runs headless via Unity -batchmode -executeMethod DragVerse.GenerateTwin.Run -sceneId {twin_id}, callable directly from the twin/ service — no manual Editor interaction needed at demo time.
 
 ## 19. SDK Design
 
@@ -372,7 +372,7 @@ Every SDK call is a thin wrapper over the REST surface in Section 16 — the SDK
 
 Three abstract adapter points, each documented with a minimal example so a third party can extend the platform without touching core code — this is the “developer platform, not a demo” claim made concrete:
 
-New robot → implement TwinForgeRobot, register in robot/adapters/registry.py. New simulator (e.g. swap Unity for a lighter engine) → implement TwinForgeSimulator. New reasoning provider → implement TaskPlanner. The orchestrator only ever talks to the abstract interface, never a concrete class.
+New robot → implement DragVerseRobot, register in robot/adapters/registry.py. New simulator (e.g. swap Unity for a lighter engine) → implement DragVerseSimulator. New reasoning provider → implement TaskPlanner. The orchestrator only ever talks to the abstract interface, never a concrete class.
 
 
 ## 21. Deployment Architecture
@@ -450,7 +450,7 @@ Future/optional — k8s/: namespace‑per‑environment manifests, HPA on the se
 | FastAPI, React | MIT | Service/dashboard scaffolding |
 | Postgres | PostgreSQL License (permissive) | Metadata store |
 
-The repo’s LICENSE should be a standard permissive license (MIT or Apache‑2.0, per the event’s own “choosealicense.com” recommendation) for TwinForge’s own code; the table above should be shipped as docs/THIRD_PARTY_LICENSES.md in the submission, since the event’s project‑submission requirements explicitly call for an open‑source license and this is exactly the kind of documentation gap that costs “Presentation and Documentation” points otherwise.
+The repo’s LICENSE should be a standard permissive license (MIT or Apache‑2.0, per the event’s own “choosealicense.com” recommendation) for DragVerse’s own code; the table above should be shipped as docs/THIRD_PARTY_LICENSES.md in the submission, since the event’s project‑submission requirements explicitly call for an open‑source license and this is exactly the kind of documentation gap that costs “Presentation and Documentation” points otherwise.
 
 End of blueprint. This document intentionally preserves every stage name and the eight‑verb SDK from the original v1 plan — the changes are entirely in how each stage is implemented, so nothing here breaks the pitch, the repo layout, or the demo narrative
 

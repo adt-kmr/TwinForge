@@ -1,11 +1,11 @@
-"""TwinForge Python SDK — one method per orchestrator endpoint (blueprint section 19)."""
+"""DragVerse Python SDK — one method per orchestrator endpoint (blueprint section 19)."""
 import io
 import json
 
 import httpx
 
 
-class TwinForgeError(RuntimeError):
+class DragVerseError(RuntimeError):
     """An orchestrator call failed. Carries the server's own explanation."""
 
     def __init__(self, response: httpx.Response):
@@ -18,12 +18,12 @@ class TwinForgeError(RuntimeError):
         self.detail = detail
 
 
-class TwinForge:
+class DragVerse:
     """Client for a running orchestrator.
 
     `http` accepts a preconfigured httpx.Client, which is how tests drive the SDK
     against the app in-process with no socket:
-        TwinForge(http=fastapi.testclient.TestClient(app))
+        DragVerse(http=fastapi.testclient.TestClient(app))
     """
 
     def __init__(self, base_url: str = "http://localhost:8000", transport=None,
@@ -44,13 +44,13 @@ class TwinForge:
     def _post(self, path: str, **kwargs) -> dict:
         response = self._http.post(path, **kwargs)
         if response.is_error:
-            raise TwinForgeError(response)
+            raise DragVerseError(response)
         return response.json()
 
     def _get(self, path: str) -> dict:
         response = self._http.get(path)
         if response.is_error:
-            raise TwinForgeError(response)
+            raise DragVerseError(response)
         return response.json()
 
     # ---------------------------------------------------------------- the eight verbs

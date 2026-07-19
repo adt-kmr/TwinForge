@@ -1,4 +1,4 @@
-# Contributing to TwinForge
+# Contributing to DragVerse
 
 We love your input! We want to make contributing as easy and transparent as possible.
 
@@ -14,8 +14,8 @@ We love your input! We want to make contributing as easy and transparent as poss
 
 ```bash
 # Clone the repository
-git clone https://github.com/adt-kmr/TwinForge.git
-cd TwinForge
+git clone https://github.com/adt-kmr/DragVerse.git
+cd DragVerse
 
 # Create virtual environment
 python -m venv .venv

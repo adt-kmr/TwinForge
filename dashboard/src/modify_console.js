@@ -1,5 +1,5 @@
 const fs = require('fs');
-const file = '/Users/deepesh/Developer/TwinForge/dashboard/src/Console.jsx';
+const file = '/Users/deepesh/Developer/DragVerse/dashboard/src/Console.jsx';
 let lines = fs.readFileSync(file, 'utf8').split('\n');
 
 // Comment out Stage 1-5 (lines 177 to 291 -> 1-indexed)

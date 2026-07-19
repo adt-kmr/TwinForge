@@ -44,8 +44,8 @@ def frame_bytes(frame: dict) -> bytes:
 
 @pytest.fixture
 def client(tmp_path, monkeypatch):
-    monkeypatch.setenv("TWINFORGE_DATA", str(tmp_path / "data"))
-    monkeypatch.setattr(db, "DB_PATH", str(tmp_path / "twinforge.db"))
+    monkeypatch.setenv("DRAGVERSE_DATA", str(tmp_path / "data"))
+    monkeypatch.setattr(db, "DB_PATH", str(tmp_path / "dragverse.db"))
     monkeypatch.delenv("SARVAM_API_KEY", raising=False)
     monkeypatch.delenv("AI_HUB_API_TOKEN", raising=False)
     return TestClient(app)

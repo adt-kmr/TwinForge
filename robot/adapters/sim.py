@@ -1,9 +1,9 @@
 from twin.generator import is_blocked
 
-from .base import TwinForgeRobot
+from .base import DragVerseRobot
 
 
-class SimRobot(TwinForgeRobot):
+class SimRobot(DragVerseRobot):
     """Kinematic robot on the generated navmesh — no physics, just occupancy."""
 
     def __init__(self, navmesh: dict | None = None, start=(0.0, 0.0, 0.0)):

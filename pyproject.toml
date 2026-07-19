@@ -3,13 +3,13 @@ requires = ["setuptools>=69.0", "wheel>=0.42"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "twinforge"
+name = "dragverse"
 version = "0.1.0"
-description = "TwinForge — end-to-end digital twin pipeline"
+description = "DragVerse — end-to-end digital twin pipeline"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.10"
-authors = [{name = "TwinForge Team"}]
+authors = [{name = "DragVerse Team"}]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -49,7 +49,7 @@ check_untyped_defs = true
 [tool.pytest.ini_options]
 minversion = "8.0"
 testpaths = ["tests"]
-# sdk/ is the twinforge package root; on the path here so the suite runs without
+# sdk/ is the dragverse package root; on the path here so the suite runs without
 # requiring an editable install first.
 pythonpath = [".", "sdk"]
 addopts = "-v --cov=sdk --cov=orchestrator --cov=capture/service --cov=semantic/service --cov=reconstruction --cov=robot/adapters --cov=sarvam/task_engine --cov=twin --cov=policy --cov=deployment --cov-report=term-missing"

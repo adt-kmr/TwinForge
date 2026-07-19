@@ -9,7 +9,7 @@
 
     <application
         android:allowBackup="false"
-        android:label="TwinForge Capture"
+        android:label="DragVerse Capture"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
 

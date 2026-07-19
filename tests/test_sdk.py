@@ -5,16 +5,16 @@ from fastapi.testclient import TestClient
 from orchestrator import db
 from orchestrator.service import app
 from tests.test_orchestrator import frame_bytes, scan_frame
-from twinforge import TwinForge, TwinForgeError
+from dragverse import DragVerse, DragVerseError
 
 
 @pytest.fixture
 def sdk(tmp_path, monkeypatch):
-    monkeypatch.setenv("TWINFORGE_DATA", str(tmp_path / "data"))
-    monkeypatch.setattr(db, "DB_PATH", str(tmp_path / "twinforge.db"))
+    monkeypatch.setenv("DRAGVERSE_DATA", str(tmp_path / "data"))
+    monkeypatch.setattr(db, "DB_PATH", str(tmp_path / "dragverse.db"))
     monkeypatch.delenv("SARVAM_API_KEY", raising=False)
     monkeypatch.delenv("AI_HUB_API_TOKEN", raising=False)
-    with TwinForge(http=TestClient(app)) as client:
+    with DragVerse(http=TestClient(app)) as client:
         yield client
 
 
@@ -48,7 +48,7 @@ def test_capture_without_frames_is_rejected_client_side(sdk):
         sdk.capture([])
 
 
-def test_server_errors_surface_as_twinforge_errors(sdk):
-    with pytest.raises(TwinForgeError) as excinfo:
+def test_server_errors_surface_as_dragverse_errors(sdk):
+    with pytest.raises(DragVerseError) as excinfo:
         sdk.reconstruct("no-such-scan")
     assert excinfo.value.status_code == 404

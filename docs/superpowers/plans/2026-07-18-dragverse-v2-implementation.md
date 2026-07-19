@@ -1,8 +1,8 @@
-# TwinForge v2 Implementation Plan
+# DragVerse v2 Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Turn the TwinForge scaffold into a working end-to-end pipeline (capture → reconstruct → segment → twin → plan → train → optimize → deploy) matching blueprint v2 (`detailed implementation doc.md`), runnable and testable offline on this machine.
+**Goal:** Turn the DragVerse scaffold into a working end-to-end pipeline (capture → reconstruct → segment → twin → plan → train → optimize → deploy) matching blueprint v2 (`detailed implementation doc.md`), runnable and testable offline on this machine.
 
 **Architecture:** One SQLite metadata store (§17.2) shared by all stages; the orchestrator (FastAPI, §16 REST surface) imports stage modules directly and records every call as a job row. Heavy/hardware-bound backends (Open3D, YOLO-World/MobileSAM, COLMAP, qai-hub, UNO Q serial, Sarvam API) are lazy-imported optional backends behind the same interfaces, with honest pure-numpy fallbacks so the whole loop runs and is testable anywhere.
 
@@ -23,11 +23,11 @@
 
 ### Task 1: Metadata store — `orchestrator/db.py`
 Files: create `orchestrator/db.py`, test `tests/test_db.py`.
-Produces: `connect(path) -> sqlite3.Connection` (row_factory=Row, FKs on), `init_db(conn)` creating all §17.2 tables, `new_id() -> str` (uuid4 hex), `insert(conn, table, **cols) -> id`, `get(conn, table, id) -> dict | None`. `DB_PATH` from `TWINFORGE_DB` env, default `data/twinforge.db`.
+Produces: `connect(path) -> sqlite3.Connection` (row_factory=Row, FKs on), `init_db(conn)` creating all §17.2 tables, `new_id() -> str` (uuid4 hex), `insert(conn, table, **cols) -> id`, `get(conn, table, id) -> dict | None`. `DB_PATH` from `DRAGVERSE_DB` env, default `data/dragverse.db`.
 Tests: all 13 tables exist; insert/get round-trip on `scans`; FK violation raises.
 
 ### Task 2: Capture service — `capture/service/app.py`, `capture/service/store.py`
-Store: `save_chunk(scan_id, index, data)`, `save_meta(scan_id, meta)`, `complete(scan_id) -> frame_count` (chunks are npz frames; count them), `scan_dir(scan_id)`. Root `data/scans/` (env `TWINFORGE_DATA`).
+Store: `save_chunk(scan_id, index, data)`, `save_meta(scan_id, meta)`, `complete(scan_id) -> frame_count` (chunks are npz frames; count them), `scan_dir(scan_id)`. Root `data/scans/` (env `DRAGVERSE_DATA`).
 App endpoints: `POST /upload/{scan_id}?index=N` (multipart chunk, resumable by index), `POST /meta/{scan_id}`, `POST /complete/{scan_id}`, `GET /scan/{scan_id}` → `{status, frame_count}`.
 Tests: upload 3 chunks (one re-uploaded, idempotent) + meta + complete → status `complete`, correct frame_count.
 
@@ -55,7 +55,7 @@ Tests: table blocks its navmesh cells; floor cells walkable; chair maps to `Furn
 Tests: "go to the shelf then pick up the box" → `[navigate_to(shelf), pickup(box)]` with a sequential edge; factory returns FunctionGemma when no key.
 
 ### Task 7: Robot adapters — `robot/adapters/`
-`base.py`: add `connect() -> bool` and `execute_path(path: list[tuple]) -> list[tuple]` (default: iterate `move`, return pose trace) to `TwinForgeRobot`; keep `move/capture_frame/get_pose`.
+`base.py`: add `connect() -> bool` and `execute_path(path: list[tuple]) -> list[tuple]` (default: iterate `move`, return pose trace) to `DragVerseRobot`; keep `move/capture_frame/get_pose`.
 `sim.py`: `SimRobot(navmesh=None)` integrates pose, refuses moves into blocked navmesh cells, `execute_path` returns visited poses.
 `unoq.py`: `UnoQRobot(port='/dev/ttyACM0')` — `connect()` opens pyserial if importable/present else returns False; `move` sends `set_wheel_speed` Bridge-RPC JSON line; velocity clamp constant (§13 safety).
 `registry.py`: `ADAPTERS = {'sim': SimRobot, 'unoq': UnoQRobot}`, `get_robot(kind, **kw)`.
@@ -87,9 +87,9 @@ Tests: quantize→dequantize max abs error < 0.05 for unit-scale weights; artifa
 - `GET /status/{job_id}` → `{stage, progress, logs_url}`.
 Tests (`tests/test_orchestrator.py`): full happy-path pipeline through TestClient with synthetic frames; gate-failure returns 409; `/status` reflects done job.
 
-### Task 11: SDK — `sdk/twinforge/`
-`client.py`: `TwinForge(base_url, transport=None)` holds `httpx.Client`; methods for all eight verbs returning parsed JSON; `run_pipeline(frames_meta..., text)` chains them. Delete the four URL-string stub modules (`capture.py, reconstruct.py, train.py, deploy.py`) — methods live on the client now.
-`__init__.py`: `from .client import TwinForge`; `__main__.py`: `main()` prints `TwinForge` (makes existing `tests/test_main.py` pass).
+### Task 11: SDK — `sdk/dragverse/`
+`client.py`: `DragVerse(base_url, transport=None)` holds `httpx.Client`; methods for all eight verbs returning parsed JSON; `run_pipeline(frames_meta..., text)` chains them. Delete the four URL-string stub modules (`capture.py, reconstruct.py, train.py, deploy.py`) — methods live on the client now.
+`__init__.py`: `from .client import DragVerse`; `__main__.py`: `main()` prints `DragVerse` (makes existing `tests/test_main.py` pass).
 Tests: SDK against the orchestrator app via `httpx.ASGITransport` — `run_pipeline` returns a deployment id.
 
 ### Task 12: Docs/deps wrap-up

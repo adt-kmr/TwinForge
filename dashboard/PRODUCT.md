@@ -23,12 +23,12 @@ Four audiences, in rough order of how much the design owes them:
 - **Operators running a live demo.** On stage, driving the console in front of an
   audience, frequently with the network deliberately off.
 
-The job to be done: understand what TwinForge does, decide whether it is real, and then
+The job to be done: understand what DragVerse does, decide whether it is real, and then
 be able to run the loop.
 
 ## Product Purpose
 
-TwinForge is an edge-first Physical AI operating layer. Point a phone at a space and get a
+DragVerse is an edge-first Physical AI operating layer. Point a phone at a space and get a
 simulation-ready digital twin, a robot taught by voice in any language, and a policy that
 runs fully offline on Snapdragon silicon. The full loop — capture, reconstruct,
 semantic-label, generate twin, adapt policy, edge-optimize, deploy — is exposed as one REST

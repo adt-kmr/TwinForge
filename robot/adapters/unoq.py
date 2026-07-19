@@ -5,10 +5,10 @@ actual motor PWM. Section 4/13 of the blueprint.
 """
 import json
 
-from .base import MAX_LINEAR_SPEED, TwinForgeRobot
+from .base import MAX_LINEAR_SPEED, DragVerseRobot
 
 
-class UnoQRobot(TwinForgeRobot):
+class UnoQRobot(DragVerseRobot):
     def __init__(self, port: str = "/dev/ttyACM0", baudrate: int = 115200,
                  speed_scale: float = 1.0):
         self.port = port

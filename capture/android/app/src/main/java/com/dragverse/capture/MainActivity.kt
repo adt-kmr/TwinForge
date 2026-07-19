@@ -1,4 +1,4 @@
-package com.twinforge.capture
+package com.dragverse.capture
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -173,7 +173,7 @@ class MainActivity : AppCompatActivity(), GLSurfaceView.Renderer {
     private fun report(text: String) = runOnUiThread { stats.text = text }
 
     private companion object {
-        const val TAG = "TwinForgeCapture"
+        const val TAG = "DragVerseCapture"
         const val CAPTURE_INTERVAL_NANOS = 333_000_000L
     }
 }

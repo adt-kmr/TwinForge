@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.twinforge.capture"
+    namespace = "com.dragverse.capture"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.twinforge.capture"
+        applicationId = "com.dragverse.capture"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
