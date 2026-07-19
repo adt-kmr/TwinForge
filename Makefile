@@ -1,4 +1,8 @@
-.PHONY: help install install-dev lint format test coverage clean
+.PHONY: help install install-dev lint format format-check test coverage clean
+
+# Every source tree we lint/format/typecheck. CI reuses these targets, so this
+# list is the single place to add a new stage package.
+PKGS = sdk/ orchestrator/ capture/ reconstruction/ semantic/ robot/ sarvam/ twin/ policy/ deployment/ tests/
 
 help:
 	@echo "Usage:"
@@ -20,12 +24,16 @@ install-dev:
 	pre-commit install
 
 lint:
-	flake8 sdk/ orchestrator/ capture/ reconstruction/ semantic/ robot/ sarvam/ tests/
-	mypy sdk/ orchestrator/ capture/ reconstruction/ semantic/ robot/ sarvam/ tests/
+	flake8 $(PKGS)
+	mypy $(PKGS)
 
 format:
-	black sdk/ orchestrator/ capture/ reconstruction/ semantic/ robot/ sarvam/ tests/
-	isort sdk/ orchestrator/ capture/ reconstruction/ semantic/ robot/ sarvam/ tests/
+	black $(PKGS)
+	isort $(PKGS)
+
+format-check:
+	black --check $(PKGS)
+	isort --check-only $(PKGS)
 
 test:
 	pytest

@@ -1,8 +1,8 @@
 <div align="center">
 
 # DragVerse
-### Build Once. Deploy Anywhere. Train Robots Inside Their Own Digital Twin. 
 
+### Build Once. Deploy Anywhere. Train Robots Inside Their Own Digital Twin
 
 <p align="center">
 An Edge-Native AI Platform for Automatic Digital Twin Generation, Reinforcement Learning, and Real-World Robot Deployment.
@@ -18,7 +18,6 @@ An Edge-Native AI Platform for Automatic Digital Twin Generation, Reinforcement 
 ![Digital Twin](https://img.shields.io/badge/Digital-Twin-blueviolet)
 ![Reinforcement Learning](https://img.shields.io/badge/RL-PPO-orange)
 ![Open Source](https://img.shields.io/badge/Open-Source-brightgreen)
-
 
 </div>
 
@@ -93,6 +92,7 @@ The entire workflow is orchestrated through a simple guided web application whil
 Training robots in the physical world is expensive, slow, and potentially unsafe.
 
 Traditional robotics development usually requires:
+
 - manually creating simulation worlds
 - designing navigation meshes
 - configuring robot environments
@@ -106,6 +106,7 @@ This process often takes days or even weeks before meaningful robot learning can
 DragVerse reduces this workflow into a guided pipeline.
 
 Using only a smartphone, DragVerse can:
+
 - Capture a real environment
 - Construct a digital twin
 - Understand scene semantics
@@ -149,6 +150,7 @@ No manual simulation design. No handcrafted maps. No custom robotics pipeline. J
 ## Reinforcement Learning Automation
 
 DragVerse automatically prepares:
+
 - observation space
 - action space
 - reward templates
@@ -164,6 +166,7 @@ using [Unity ML-Agents](https://github.com/Unity-Technologies/ml-agents) PPO.
 Unlike cloud-only robotics systems, DragVerse prioritizes on-device intelligence.
 
 Supported execution includes:
+
 - Qualcomm Hexagon NPU
 - Qualcomm AI Hub
 - QAIRT
@@ -205,11 +208,13 @@ Designed to be approachable, even if you are new to robotics.
 DragVerse supports natural language robot control.
 
 Online mode:
+
 - Sarvam AI
 - multilingual speech understanding
 - intent parsing
 
 Offline mode:
+
 - [Whisper](https://github.com/openai/whisper)
 - FunctionGemma
 - entirely on-device
@@ -219,6 +224,7 @@ Offline mode:
 ## Edge Robot Deployment
 
 Policies trained in simulation are exported as ONNX models before being:
+
 - optimized
 - quantized
 - accelerated
@@ -281,6 +287,7 @@ DragVerse consists of six major stages.
 ## Stage 1 - Environment Capture
 
 A Snapdragon-powered smartphone captures:
+
 - RGB imagery
 - camera poses
 - IMU information
@@ -294,6 +301,7 @@ The captured environment becomes the foundation for reconstruction.
 ## Stage 2 - Digital Twin Generation
 
 Captured data is transformed into:
+
 - reconstructed scene
 - semantic labels
 - physics colliders
@@ -308,6 +316,7 @@ No manual scene building is required.
 ## Stage 3 - Robot Task Definition
 
 Users specify:
+
 - robot platform
 - activity
 - objective
@@ -320,6 +329,7 @@ DragVerse converts these selections into reinforcement learning configurations.
 ## Stage 4 - Reinforcement Learning
 
 Inside Unity:
+
 - PPO training
 - reward optimization
 - simulation validation
@@ -332,6 +342,7 @@ The generated digital twin serves directly as the training environment.
 ## Stage 5 - Edge Optimization
 
 Policies are exported to ONNX before:
+
 - quantization
 - optimization
 - Qualcomm AI Hub conversion
@@ -364,6 +375,7 @@ Most robotics platforms solve only one piece of the pipeline.
 DragVerse unifies every stage into one automated workflow.
 
 It is simultaneously:
+
 - Digital Twin Generator
 - Simulation Generator
 - RL Training Platform
@@ -377,6 +389,7 @@ within a single application.
 # Research Contributions
 
 DragVerse combines several research areas into one integrated workflow:
+
 - Digital Twin Generation
 - Edge Artificial Intelligence
 - Reinforcement Learning
@@ -397,18 +410,23 @@ While each individual domain has existing tools, DragVerse focuses on automating
 DragVerse is designed around five engineering principles.
 
 ### Edge First
+
 Inference should execute on-device whenever practical.
 
 ### Modular
+
 Every pipeline stage is independently replaceable.
 
 ### Open Source
+
 All source code is publicly available. No proprietary algorithms are required to reproduce the system.
 
 ### Hardware Agnostic
+
 Although optimized for Qualcomm platforms, the software architecture is designed to be extensible to future robotics hardware.
 
 ### Reproducible
+
 Every stage from environment capture to deployment can be reproduced using documented instructions and open-source dependencies.
 
 ---
@@ -625,6 +643,7 @@ One of DragVerse's major goals is to maximize edge execution.
 ## System Requirements
 
 ### Minimum
+
 - Python 3.11+
 - Git
 - Node.js 20+
@@ -636,6 +655,7 @@ One of DragVerse's major goals is to maximize edge execution.
 ---
 
 ### Recommended
+
 - Ubuntu 22.04 LTS
 - CUDA-enabled GPU
 - Snapdragon-powered Android phone
@@ -656,6 +676,7 @@ cd DragVerse
 # Create Python Environment
 
 Using Conda
+
 ```bash
 conda create -n DragVerse python=3.11
 conda activate DragVerse
@@ -664,12 +685,14 @@ conda activate DragVerse
 or
 
 Using venv
+
 ```bash
 python -m venv venv
 source venv/bin/activate
 ```
 
 Windows
+
 ```powershell
 venv\Scripts\activate
 ```
@@ -696,6 +719,7 @@ npm install
 # Install Unity
 
 Install:
+
 - Unity Hub
 - Unity 2022 LTS
 - Android Build Support
@@ -709,11 +733,13 @@ Then open `unity/` using Unity Hub.
 # Arduino UNO Q Setup
 
 Install:
+
 - Arduino IDE
 - UNO Q SDK
 - QAIRT Runtime
 
 Flash firmware:
+
 ```bash
 cd robot/firmware
 upload firmware
@@ -724,14 +750,17 @@ upload firmware
 # Android Setup
 
 Enable:
+
 - USB Debugging
 - Developer Mode
 
 Install:
+
 - Android SDK
 - ADB
 
 Verify:
+
 ```bash
 adb devices
 ```
@@ -741,11 +770,13 @@ adb devices
 # Qualcomm AI Hub
 
 Authenticate:
+
 ```bash
 qai-hub configure
 ```
 
 Verify installation:
+
 ```bash
 qai-hub devices
 ```
@@ -793,22 +824,27 @@ python deployment/check_connection.py
 DragVerse is operated entirely through the guided web interface.
 
 ## Step 1 - Capture Environment
+
 Walk through the environment using the smartphone.
 
 ---
 
 ## Step 2 - Choose Robot
+
 Example: `UNO Q Buggy`
 
 ---
 
 ## Step 3 - Choose AI Model
+
 Examples: [YOLO](https://github.com/ultralytics/ultralytics), [MobileSAM](https://github.com/ChaoningZhang/MobileSAM), [Whisper](https://github.com/openai/whisper)
 
 ---
 
 ## Step 4 - Speak Instruction
+
 Examples:
+
 ```
 Go to the elevator.
 Navigate to the charging station.
@@ -819,7 +855,9 @@ Inspect the corridor.
 ---
 
 ## Step 5 - Choose Activity
+
 Examples:
+
 - Navigation
 - Patrol
 - Follow
@@ -829,6 +867,7 @@ Examples:
 ---
 
 ## Step 6 - Deploy
+
 Click `Deploy to Robot`. The optimized policy is pushed onto the robot, where inference runs locally.
 
 ---
@@ -867,6 +906,7 @@ Edge Deployment
 Configuration files are stored under `configs/`.
 
 Example:
+
 ```yaml
 capture:
   resolution: high
@@ -891,31 +931,37 @@ simulation:
 # Running Individual Components
 
 Capture
+
 ```bash
 python capture/run_capture.py
 ```
 
 Generate Twin
+
 ```bash
 python twin_generator/generate.py
 ```
 
 Train Policy
+
 ```bash
 mlagents-learn configs/ppo.yaml
 ```
 
 Export ONNX
+
 ```bash
 python training/export_policy.py
 ```
 
 Optimize
+
 ```bash
 python deployment/quantize.py
 ```
 
 Deploy
+
 ```bash
 python deployment/deploy.py
 ```
@@ -925,6 +971,7 @@ python deployment/deploy.py
 # Logging
 
 Runtime logs are stored inside `logs/`:
+
 - Backend Logs
 - Robot Logs
 - Deployment Logs
@@ -936,6 +983,7 @@ Runtime logs are stored inside `logs/`:
 # Monitoring
 
 DragVerse continuously monitors:
+
 - Robot Status
 - Battery
 - Latency
@@ -1088,6 +1136,7 @@ The system is designed to maximize NPU offload during inference, keeping power c
 DragVerse is designed with deployment safety in mind.
 
 ## Robot Safety
+
 - Maximum velocity limits
 - Emergency stop
 - Deployment verification
@@ -1098,6 +1147,7 @@ DragVerse is designed with deployment safety in mind.
 ---
 
 ## AI Safety
+
 - Simulation validation before deployment
 - Confidence threshold verification
 - Policy integrity checks
@@ -1107,6 +1157,7 @@ DragVerse is designed with deployment safety in mind.
 ---
 
 ## Software Safety
+
 - Exception handling
 - API validation
 - Logging
@@ -1118,6 +1169,7 @@ DragVerse is designed with deployment safety in mind.
 # Telemetry
 
 During deployment DragVerse streams:
+
 - Robot status
 - Motor state
 - Battery level
@@ -1135,6 +1187,7 @@ to the web dashboard.
 # Monitoring Dashboard
 
 The dashboard provides live monitoring of:
+
 - Capture progress
 - Reconstruction status
 - RL training progress
@@ -1149,17 +1202,21 @@ The dashboard provides live monitoring of:
 # Troubleshooting
 
 ## Backend won't start
+
 Ensure `pip install -r requirements.txt` is completed successfully.
 
 ---
 
 ## Frontend won't build
+
 Delete `node_modules` and reinstall with `npm install`.
 
 ---
 
 ## Unity project fails
+
 Verify:
+
 - Unity 2022 LTS
 - ML-Agents package installed
 - Correct Python environment
@@ -1167,7 +1224,9 @@ Verify:
 ---
 
 ## Robot cannot connect
+
 Verify:
+
 - Wi-Fi connection
 - UNO Q firmware
 - USB permissions
@@ -1176,6 +1235,7 @@ Verify:
 ---
 
 ## Qualcomm AI Hub issues
+
 Verify `qai-hub devices` returns available devices.
 
 ---
@@ -1183,26 +1243,31 @@ Verify `qai-hub devices` returns available devices.
 # Frequently Asked Questions
 
 ## Does DragVerse require cloud connectivity?
+
 No. The majority of inference is designed to execute locally on supported edge hardware. Some optional cloud services (such as multilingual online speech understanding) may be used depending on configuration.
 
 ---
 
 ## Can I use another robot?
+
 Yes. The robot abstraction layer allows new robot adapters to be implemented with minimal changes.
 
 ---
 
 ## Can another reinforcement learning algorithm be used?
+
 Yes. DragVerse is designed to be modular. Although PPO is the reference implementation, alternative algorithms can be integrated.
 
 ---
 
 ## Can I replace Unity?
+
 Yes. The architecture intentionally separates simulation generation from policy training. Alternative simulators can be integrated.
 
 ---
 
 ## Does DragVerse require Qualcomm hardware?
+
 No. The architecture is modular. Qualcomm platforms provide the reference implementation and optimized execution path, but portions of the system can run on other supported hardware.
 
 ---
@@ -1210,6 +1275,7 @@ No. The architecture is modular. Qualcomm platforms provide the reference implem
 # Continuous Integration
 
 Recommended GitHub Actions workflow:
+
 - Linting
 - Unit Tests
 - Integration Tests
@@ -1226,26 +1292,34 @@ Every pull request should pass automated validation before merging.
 Contributions of all sizes are welcome.
 
 To contribute:
+
 1. Fork the repository.
 2. Create a feature branch.
+
 ```bash
 git checkout -b feature/amazing-feature
 ```
-3. Commit changes.
+
+1. Commit changes.
+
 ```bash
 git commit -m "Add amazing feature"
 ```
-4. Push.
+
+1. Push.
+
 ```bash
 git push origin feature/amazing-feature
 ```
-5. Open a Pull Request.
+
+1. Open a Pull Request.
 
 ---
 
 ## Contribution Guidelines
 
 Please ensure:
+
 - Code is documented.
 - New features include tests.
 - Existing functionality is not broken.
@@ -1275,6 +1349,7 @@ If you discover a security vulnerability, **please do not disclose it publicly i
 # Contact
 
 For questions, collaborations, or issues:
+
 ```
 adtkmr.contact@gmail.com
 ```
@@ -1284,6 +1359,7 @@ adtkmr.contact@gmail.com
 # Roadmap
 
 ## Completed
+
 - Environment capture
 - Digital twin generation
 - Semantic labeling
@@ -1297,6 +1373,7 @@ adtkmr.contact@gmail.com
 ---
 
 ## Planned
+
 - Multi-robot coordination
 - Swarm robotics
 - Dynamic obstacle adaptation
@@ -1314,6 +1391,7 @@ adtkmr.contact@gmail.com
 DragVerse is built on the belief that advanced robotics research should be reproducible, transparent, and accessible.
 
 Accordingly:
+
 - No proprietary algorithms are required.
 - Source code is publicly available.
 - Dependencies are openly documented.
@@ -1373,6 +1451,7 @@ See the accompanying **LICENSE** file for details.
 We gratefully acknowledge the technologies, communities, and open-source ecosystems that made DragVerse possible.
 
 Special thanks to:
+
 - Qualcomm Technologies
 - Qualcomm AI Hub
 - Unity Technologies
@@ -1388,6 +1467,7 @@ Special thanks to:
 # Support the Project
 
 If you find DragVerse useful:
+
 - Star this repository
 - Fork the project
 - Contribute improvements

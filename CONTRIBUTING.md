@@ -14,8 +14,8 @@ We love your input! We want to make contributing as easy and transparent as poss
 
 ```bash
 # Clone the repository
-git clone https://github.com/twinforge/twinforge.git
-cd twinforge
+git clone https://github.com/adt-kmr/TwinForge.git
+cd TwinForge
 
 # Create virtual environment
 python -m venv .venv

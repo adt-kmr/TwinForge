@@ -1,0 +1,1407 @@
+/* DragVerse — "Depth Sheet".
+   One design system across both routes: `/` is the overview, `/dashboard` is the console.
+
+   The palette is a depth ramp, the colormap a depth sensor actually outputs: far is
+   indigo, mid is teal, near is hot. Near is spent only where the system is sensing or
+   working right now, so colour carries state instead of decorating.
+
+   Type is one variable family at both ends of its width axis — Archivo expanded for
+   display, condensed for instrument labels, regular for body — against JetBrains Mono for
+   anything the machine measured. Two families, contrasting on proportion rather than on
+   the serif/sans axis: this brand is an instrument, and a text serif here would be warmth
+   applied as costume.
+
+   Sizes come from two ramps, never ad hoc: --ui-* is fixed rem for the console (dense,
+   predictable), --brand-* is fluid clamp for the landing. Nothing sits below 14px, since
+   the viewing context is a projector in a bright room.
+
+   The console and telemetry rules below are the originals: rather than rewrite them for
+   the new identity, the legacy token names are retargeted onto the Depth Sheet palette. */
+
+:root {
+  --vellum: #eef0ea;
+  --vellum-deep: #e6e9e1;
+  --graphite: #12151a;
+  --rule: #cbd1c7;
+  --far: #22307e;
+  --mid: #14b09a;
+  --near: #ff5b2e;
+  --muted: #4a524d;
+  --body: #2c3238;
+
+  /* The ramp's hot and mid ends are graphic colours: they carry the scan plane, the robot
+     marker and the point cloud, where 3:1 is the bar and large size does the work. As
+     small text on vellum they measure 2.69:1 and 3.49:1, which fails. Text takes the -ink
+     pair instead — same hues, dark enough to read from the back row of a demo room. */
+  --near-ink: #a82c0c;
+  --mint-ink: #06584e;
+
+  /* 1px hairlines disappear on a projector. */
+  --hair: 1.5px;
+
+  /* Legacy names, retargeted. The console was built dark; these three lines are what
+     move it onto the sheet without touching a single one of its rules. */
+  --ink: var(--vellum);
+  --panel: var(--vellum-deep);
+  --line: var(--rule);
+  --text: var(--graphite);
+  --amber: var(--near);
+  --mint: #0e8f7d;
+  --coral: #c0331c;
+  --cyan: var(--far);
+
+  /* Two families, contrasting on proportion: one variable grotesque used at both ends of
+     its width axis, and a monospace for anything the machine measured. The serif that
+     used to set body copy is gone — this brand is an instrument, and a serif "for warmth"
+     on a technical brief is the reflex, not a decision. Archivo carries display and body
+     alike; its width axis does the work a second family would otherwise do. */
+  --sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --display: var(--sans);
+
+  /* UI ramp — console, labels, data. Fixed rem, ~1.125 ratio, floored at 14px so nothing
+     disappears from the back row of a demo. */
+  --ui-sm: 0.875rem;
+  --ui-base: 1rem;
+  --ui-lg: 1.125rem;
+
+  /* Brand ramp — landing. Fluid, >=1.25 between heading steps. */
+  --brand-body: 1.125rem;
+  --brand-lead: clamp(1.15rem, 1.4vw, 1.3rem);
+  --brand-sub: clamp(1.5rem, 2.6vw, 2.1rem);
+  --brand-title: clamp(2rem, 3.8vw, 3rem);
+  --brand-display: clamp(2.4rem, 4.6vw, 3.75rem);
+
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+  --band-gap: clamp(4.5rem, 11vw, 9rem);
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--vellum);
+  color: var(--graphite);
+  font-family: var(--sans);
+  font-size: var(--brand-body);
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+  font-optical-sizing: auto;
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--far);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------------ preloader */
+
+.preload {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: var(--vellum);
+}
+
+.preload__body {
+  width: min(28rem, 76vw);
+}
+
+.preload__eyebrow {
+  display: block;
+  font-family: var(--display);
+  font-variation-settings: "wdth" 62, "wght" 600;
+  font-size: var(--ui-sm);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.preload__bar {
+  position: relative;
+  height: var(--hair);
+  margin: 1.1rem 0 0.9rem;
+  background: var(--rule);
+  overflow: hidden;
+}
+
+.preload__scan {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 18%;
+  background: linear-gradient(90deg, transparent, var(--near), transparent);
+  transform: translateX(-100%);
+}
+
+.preload__count {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--ui-sm);
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------------- sheet */
+
+.sheet {
+  position: relative;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* Registration marks — a survey sheet is trimmed to register, so the corners say where. */
+.reg {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+}
+
+.reg::before,
+.reg::after {
+  content: "";
+  position: absolute;
+  background: var(--rule);
+}
+
+.reg::before {
+  inset: 50% 0 auto 0;
+  height: 1px;
+}
+
+.reg::after {
+  inset: 0 auto 0 50%;
+  width: 1px;
+}
+
+.reg--tl { top: 1.1rem; left: 0.75rem; }
+.reg--tr { top: 1.1rem; right: 0.75rem; }
+.reg--bl { bottom: 1.1rem; left: 0.75rem; }
+.reg--br { bottom: 1.1rem; right: 0.75rem; }
+
+/* ------------------------------------------------------------------- masthead */
+
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 1.75rem 0 1rem;
+  border-bottom: var(--hair) solid var(--rule);
+}
+
+.masthead__mark {
+  font-family: var(--display);
+  font-variation-settings: "wdth" 112, "wght" 700;
+  font-size: var(--ui-lg);
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: var(--graphite);
+}
+
+.masthead__nav {
+  display: flex;
+  gap: 1.5rem;
+  font-family: var(--display);
+  font-variation-settings: "wdth" 62, "wght" 600;
+  font-size: var(--ui-sm);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.masthead__nav a {
+  color: var(--muted);
+  text-decoration: none;
+  padding-bottom: 0.2rem;
+  border-bottom: var(--hair) solid transparent;
+}
+
+.masthead__nav a:hover {
+  color: var(--graphite);
+}
+
+.masthead__nav a.is-here {
+  color: var(--graphite);
+  border-bottom-color: var(--near-ink);
+}
+
+/* ---------------------------------------------------------------------- stamp */
+
+.stamp {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  justify-content: space-between;
+  padding: 2rem 0 3.5rem;
+  border-top: var(--hair) solid var(--rule);
+  font-family: var(--mono);
+  font-size: var(--ui-sm);
+  color: var(--muted);
+}
+
+/* =========================================================== landing: the hero */
+
+/* Tall scroll track; the viewport inside it sticks so one canvas carries every stage. */
+.recon {
+  position: relative;
+  height: 560vh;
+}
+
+/* Without the scrub there is nothing to scroll through — the canvas paints its finished
+   state immediately, so the track collapses to one screen instead of 5.6 empty ones. */
+@media (prefers-reduced-motion: reduce) {
+  .recon {
+    height: 100vh;
+  }
+}
+
+.recon__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.recon__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The lens: the circular procedural shader anchoring the hero. It's the first
+   visualization a viewer meets, so it sits well right of center and stays the
+   Measured Colour Rule's hot end — the sensor is actively looking. Fades out the
+   moment scroll starts and the real grid takes over. */
+.recon__rest {
+  display: block;
+  position: absolute;
+  right: 7%;
+  top: 46%;
+  width: min(46vmin, 520px);
+  height: min(46vmin, 520px);
+  transform: translate(0, -50%);
+  cursor: pointer;
+}
+
+.recon__rest--hidden {
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .recon__rest {
+    right: 50%;
+    top: 38%;
+    transform: translate(50%, -50%);
+  }
+}
+
+.recon__title {
+  position: absolute;
+  inset: auto auto 12vh 0;
+  max-width: min(34rem, 88%);
+  will-change: opacity, transform;
+}
+
+.display {
+  margin: 0;
+  font-family: var(--display);
+  font-variation-settings: "wdth" 118, "wght" 760;
+  font-size: var(--brand-display);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.display em {
+  font-style: normal;
+  color: #ff2900;
+}
+
+.lede {
+  max-width: 52ch;
+  margin: 1.6rem 0 0;
+  font-size: var(--brand-lead);
+  line-height: 1.5;
+  text-wrap: pretty;
+  color: var(--body);
+}
+
+.scrollcue {
+  margin: 2rem 0 0;
+  font-family: var(--display);
+  font-variation-settings: "wdth" 62, "wght" 600;
+  font-size: var(--ui-sm);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.recon__caption {
+  position: absolute;
+  inset: auto auto 12vh 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 1rem;
+  max-width: min(30rem, 88%);
+  opacity: 0;
+}
+
+.recon__step {
+  font-family: var(--mono);
+  font-size: var(--ui-sm);
+  color: var(--near-ink);
+  align-self: center;
+}
+
+.recon__name {
+  font-family: var(--display);
+  font-variation-settings: "wdth" 112, "wght" 700;
+  font-size: var(--brand-sub);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.recon__note {
+  grid-column: 2;
+  font-size: var(--ui-base);
+  line-height: 1.55;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* The planner's decision log (phase 4-5 of the recon canvas): what it sensed and did,
+   nearest obstacle first. Each line reveals on its own and holds — an accumulating
+   readout, not a status line that overwrites itself. */
+.recon__plan {
+  position: absolute;
+  inset: 9vh auto auto 0;
+  display: grid;
+  gap: 0.3rem;
+  max-width: min(22rem, 70vw);
+}
+
+.recon__plan-line {
+  display: block;
+  font-family: var(--mono);
+  font-size: var(--ui-sm);
+  color: var(--muted);
+  white-space: pre;
+  opacity: 0;
+}
+
+.recon__plan-line:first-child {
+  color: var(--near-ink);
+}
+
+.recon__plan-line:last-child {
+  color: var(--mint-ink);
+}
+
+.recon__readout {
+  position: absolute;
+  inset: auto 0 12vh auto;
+  display: grid;
+  gap: 0.5rem;
+  text-align: right;
+  font-family: var(--mono);
+  font-size: var(--ui-sm);
+  opacity: 0;
+}
+
+.recon__readout span {
+  display: block;
+  font-size: var(--ui-sm);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.recon__readout b {
+  font-weight: 500;
+  color: var(--far);
+}
+
+/* In-scene object tags (phase 3+) — real DOM text over the WebGL canvas via CSS2DRenderer,
+   replacing baked ctx.fillText. Sizes match the pre-upgrade canvas labels (11px/9.5px):
+   these are graphic/instrument callouts inside the illustration, not page body text, so the
+   14px floor doesn't apply here any more than it did to the canvas-drawn version. */
+.recon__tags {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.recon__tag {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.recon__tag-label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--graphite);
+}
+
+.recon__tag-collider {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.5938rem;
+  color: var(--muted);
+}
+
+.recon__tag-leader {
+  stroke: var(--muted);
+  stroke-opacity: 0.5;
+  stroke-width: 1;
+}
+
+/* ============================================================== landing: bands */
+
+.band {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1fr) minmax(0, 3.1fr);
+  gap: var(--gutter);
+  padding: var(--band-gap) 0;
+  border-top: var(--hair) solid var(--rule);
+}
+
+.band--gate {
+  background: linear-gradient(180deg, transparent, rgba(34, 48, 126, 0.04));
+}
+
+.band__body {
+  max-width: 46rem;
+  /* Without this the code block's min-content width pushes the grid track wide. */
+  min-width: 0;
+}
+
+/* Marginalia — a surveyor annotates the margin, not the drawing. */
+.notes {
+  font-family: var(--mono);
+  font-size: var(--ui-sm);
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.notes p {
+  margin: 0 0 0.7rem;
+  padding-left: 0.9rem;
+  border-left: var(--hair) solid var(--rule);
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 1rem;
+  font-family: var(--display);
+  font-variation-settings: "wdth" 62, "wght" 600;
+  font-size: var(--ui-sm);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--near-ink);
+}
+
+.title {
+  margin: 0 0 1.4rem;
+  font-family: var(--display);
+  font-variation-settings: "wdth" 115, "wght" 700;
+  font-size: var(--brand-title);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.prose {
+  max-width: 60ch;
+  margin: 0 0 2rem;
+  font-size: var(--brand-body);
+  line-height: 1.6;
+  text-wrap: pretty;
+  color: var(--body);
+}
+
+.prose--small {
+  margin: 2rem 0 0;
+  font-size: var(--ui-base);
+  color: var(--muted);
+}
+
+.prose code,
+.steps__loop code {
+  font-family: var(--mono);
+  font-size: 0.86em;
+  color: var(--far);
+}
+
+/* --------------------------------------------------------------------- steps */
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: var(--hair) solid var(--rule);
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 3.25rem 1fr;
+  gap: 0 1rem;
+  padding: 1.35rem 0;
+  border-bottom: var(--hair) solid var(--rule);
+}
+
+.step__n {
+  font-family: var(--mono);
+  font-size: var(--ui-sm);
+  color: var(--muted);
+  padding-top: 0.35rem;
+}
+
+.step__body h3 {
+  margin: 0 0 0.35rem;
+  font-family: var(--display);
+  font-variation-settings: "wdth" 108, "wght" 660;
+  font-size: var(--ui-lg);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.step__body p {
+  max-width: 60ch;
+  margin: 0 0 0.6rem;
+  line-height: 1.6;
+  color: var(--body);
+  text-wrap: pretty;
+}
+
+.step__body code {
+  display: block;
+  font-family: var(--mono);
+  font-size: var(--ui-sm);
+  color: var(--far);
+  overflow-wrap: anywhere;
+}
+
+.steps__loop {
+  display: grid;
+  grid-template-columns: 3.25rem 1fr;
+  gap: 1rem;
+  margin: 1.35rem 0 0;
+  max-width: 38rem;
+  color: var(--body);
+}
+
+.steps__loopmark {
+  font-family: var(--mono);
+  font-size: var(--ui-base);
+  color: var(--near-ink);
+  padding-top: 0.15rem;
+}
+
+/* ------------------------------------------------------------------- sim gate */
+/* Named `simgate`, not `gate` — Telemetry already owns `.gate` for its NPU badge. */
+
+.simgate {
+  max-width: 34rem;
+}
+
+.simgate__meter {
+  position: relative;
+  height: 2.75rem;
+  border: var(--hair) solid var(--rule);
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0 calc(10% - 1px),
+    var(--rule) calc(10% - 1px) 10%
+  );
+}
+
+.simgate__meter i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--pass) * 100%);
+  transform-origin: left center;
+  background: rgba(34, 48, 126, 0.14);
+  border-right: 2px solid var(--far);
+}
+
+.simgate__legend {
+  margin: 0.85rem 0 0;
+  font-family: var(--mono);
+  font-size: var(--ui-sm);
+  color: var(--muted);
+}
+
+.simgate__legend b {
+  color: var(--far);
+  font-weight: 500;
+}
+
+/* ----------------------------------------------------------------- edge tiers */
+/* Named `edge-tiers` — Telemetry already owns `.tiers` for its silicon table. */
+
+.edge-tiers {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  background: var(--rule);
+  border: var(--hair) solid var(--rule);
+}
+
+.edge-tier {
+  padding: 1.4rem 1.25rem;
+  background: var(--vellum);
+}
+
+.edge-tier__role {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-family: var(--display);
+  font-variation-settings: "wdth" 62, "wght" 700;
+  font-size: var(--ui-sm);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--far);
+}
+
+.edge-tier p {
+  margin: 0;
+  font-size: var(--ui-base);
+  color: var(--body);
+}
+
+/* ----------------------------------------------------------- code block + cta */
+
+.code {
+  margin: 0 0 2rem;
+  padding: 1.4rem 1.5rem;
+  overflow-x: auto;
+  background: var(--graphite);
+  color: #d8ded6;
+  font-family: var(--mono);
+  font-size: var(--ui-base);
+  line-height: 1.75;
+}
+
+.code code {
+  font: inherit;
+}
+
+.c-k { color: #9aa6ff; }
+.c-s { color: #6fd9c4; }
+.c-f { color: #ffab8c; }
+
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border: var(--hair) solid var(--graphite);
+  color: var(--graphite);
+  font-family: var(--display);
+  font-variation-settings: "wdth" 84, "wght" 620;
+  font-size: var(--ui-sm);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 140ms ease, color 140ms ease, transform 100ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.btn:hover {
+  background: var(--graphite);
+  color: var(--vellum);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn--solid {
+  background: var(--graphite);
+  color: var(--vellum);
+}
+
+.btn--solid:hover {
+  background: var(--far);
+  border-color: var(--far);
+}
+
+/* ================================================================ the console */
+
+.console {
+  /* The console is instrumentation: everything in it is set in the data face. */
+  font-family: var(--mono);
+  font-size: var(--ui-base);
+  /* Tighter than a landing band — an operator wants the rail on screen, not air. */
+  padding: 3rem 0 4rem;
+}
+
+.console__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+}
+
+.console__head .title {
+  margin: 0;
+  font-size: var(--brand-sub);
+}
+
+.console__status {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* A quieter button than .btn--solid: this one undoes work, so it doesn't ask for the
+   click the way a stage's run button does. */
+.btn--ghost {
+  padding: 0.5rem 1rem;
+  border-color: var(--line);
+  color: var(--muted);
+  background: none;
+  cursor: pointer;
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background: var(--graphite);
+  border-color: var(--graphite);
+  color: var(--vellum);
+}
+
+.btn--ghost:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------------- scan dropzone */
+
+.dropzone {
+  /* Dashed, because the whole affordance is "a file goes in here" and a dashed rule
+     reads as a slot rather than a panel. Flat per the sheet rule — no shadow, no fill. */
+  border: var(--hair) dashed var(--line);
+  padding: 1.25rem 1rem;
+  text-align: center;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.dropzone--over {
+  border-color: var(--near-ink);
+  border-style: solid;
+  background: var(--vellum-deep);
+}
+
+/* The input still exists for keyboard and assistive tech; the label is the visible
+   target, so the two are wired together by id rather than the input being hidden. */
+.dropzone input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.dropzone label {
+  display: block;
+  font-size: var(--ui-sm);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.dropzone input[type="file"]:focus-visible + label {
+  outline: var(--hair) solid var(--near-ink);
+  outline-offset: 4px;
+}
+
+.dropzone__link {
+  color: var(--near-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link {
+  font-size: var(--ui-sm);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.link::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 0.6rem;
+  border-radius: 50%;
+  background: currentColor;
+  vertical-align: middle;
+}
+
+.link.up { color: var(--mint-ink); }
+.link.down { color: var(--coral); }
+
+.console__grid {
+  display: grid;
+  grid-template-columns: minmax(360px, 5fr) 7fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+@media (max-width: 1000px) {
+  .console__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* -------------------------------------------------------------------- rail */
+
+.rail {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  /* The pipeline is a strict sequence — every stage consumes the id before it.
+     The line is that dependency, drawn. */
+  border-left: var(--hair) solid var(--line);
+}
+
+.stage {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  gap: 1rem;
+  padding: 0 0 2rem 1.5rem;
+  margin-left: -1px;
+}
+
+.stage .marker {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-left: -2.75rem;
+  display: grid;
+  place-items: center;
+  border: var(--hair) solid var(--line);
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--muted);
+  font-size: var(--ui-sm);
+  letter-spacing: 0.08em;
+  transition: color 150ms, border-color 150ms;
+}
+
+.stage.ready .marker {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
+.stage.busy .marker {
+  color: var(--near-ink);
+  border-color: var(--near-ink);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.stage.done .marker {
+  color: var(--mint-ink);
+  border-color: var(--mint-ink);
+}
+
+.stage.failed .marker {
+  color: var(--coral);
+  border-color: var(--coral);
+}
+
+@keyframes pulse {
+  50% { opacity: 0.35; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage.busy .marker {
+    animation: none;
+  }
+}
+
+.stage .body {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.stage .head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.stage h3 {
+  margin: 0;
+  font-family: var(--display);
+  font-variation-settings: "wdth" 76, "wght" 640;
+  font-size: var(--ui-base);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.stage .out {
+  color: var(--cyan);
+  font-size: var(--ui-sm);
+}
+
+.stage .fields {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.9rem 0;
+}
+
+.stage label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-size: var(--ui-sm);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.stage input,
+.stage select {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: var(--hair) solid var(--line);
+  background: var(--vellum);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--ui-base);
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.stage button {
+  padding: 0.5rem 1.1rem;
+  border: var(--hair) solid var(--text);
+  background: transparent;
+  color: var(--text);
+  font-family: var(--display);
+  font-variation-settings: "wdth" 76, "wght" 620;
+  font-size: var(--ui-sm);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 120ms, color 120ms;
+}
+
+.stage button:hover:not(:disabled) {
+  background: var(--text);
+  color: var(--ink);
+}
+
+.stage button:disabled {
+  border-color: var(--line);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.hint {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: var(--ui-sm);
+}
+
+.hint code {
+  color: var(--cyan);
+  overflow-wrap: anywhere;
+}
+
+.graph {
+  margin: 0.75rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  font-size: var(--ui-sm);
+}
+
+.graph span {
+  color: var(--cyan);
+}
+
+.error {
+  margin-top: 0.9rem;
+  border-left: 2px solid var(--coral);
+  padding: 0.5rem 0.75rem;
+  background: rgba(192, 51, 28, 0.06);
+  font-size: var(--ui-sm);
+}
+
+.error strong {
+  color: var(--coral);
+  font-weight: 500;
+}
+
+.error dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.15rem 1rem;
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+}
+
+.error dd {
+  margin: 0;
+  color: var(--text);
+}
+
+/* -------------------------------------------------------------------- view */
+
+.view {
+  display: grid;
+  gap: 1.5rem;
+  position: sticky;
+  top: 2rem;
+}
+
+@media (max-width: 1000px) {
+  .view {
+    position: static;
+  }
+}
+
+.panel {
+  border: var(--hair) solid var(--line);
+  background: var(--panel);
+  padding: 1.25rem;
+  min-width: 0;
+}
+
+.panel h2 {
+  margin: 0 0 1rem;
+  font-family: var(--display);
+  font-variation-settings: "wdth" 62, "wght" 620;
+  color: var(--muted);
+  font-size: var(--ui-sm);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------- plan view */
+
+svg.plan {
+  display: block;
+  width: 100%;
+  max-height: 58vh;
+}
+
+.empty-plan {
+  display: grid;
+  place-content: center;
+  gap: 0.35rem;
+  min-height: 16rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty-plan p {
+  margin: 0;
+}
+
+.gridline {
+  stroke: var(--line);
+}
+
+.substrate rect {
+  fill: rgba(34, 48, 126, 0.05);
+  stroke: var(--line);
+}
+
+.prop rect {
+  fill: rgba(20, 176, 154, 0.16);
+  stroke: var(--mid);
+}
+
+.prop text {
+  fill: var(--muted);
+  font-family: var(--mono);
+  letter-spacing: 0.1em;
+}
+
+.trace {
+  fill: none;
+  stroke: var(--near-ink);
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.robot {
+  fill: var(--near-ink);
+}
+
+/* -------------------------------------------------------------------- jobs */
+
+.jobs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 20rem;
+  overflow-y: auto;
+  font-size: var(--ui-sm);
+}
+
+.jobs li {
+  display: grid;
+  grid-template-columns: 8rem 5rem 1fr;
+  gap: 1rem;
+  padding: 0.45rem 0;
+  border-bottom: var(--hair) solid var(--line);
+}
+
+.jobs .stage-name {
+  color: var(--text);
+  letter-spacing: 0.08em;
+}
+
+.jobs .status {
+  text-transform: uppercase;
+  font-size: var(--ui-sm);
+  letter-spacing: 0.12em;
+}
+
+.jobs .running .status,
+.jobs li.running .status {
+  color: var(--near-ink);
+}
+
+.jobs li.done .status { color: var(--mint-ink); }
+.jobs li.failed .status { color: var(--coral); }
+
+.jobs .detail {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------------- telemetry */
+
+.panel.wide {
+  grid-column: 1 / -1;
+}
+
+.telemetry h3 {
+  font-family: var(--display);
+  font-variation-settings: "wdth" 62, "wght" 620;
+  font-size: var(--ui-sm);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
+}
+
+.tiers {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--ui-sm);
+  margin-bottom: 1rem;
+}
+
+.tiers th {
+  text-align: left;
+  color: var(--muted);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: var(--ui-sm);
+  padding: 0.3rem 0.6rem 0.3rem 0;
+  border-bottom: var(--hair) solid var(--line);
+}
+
+.tiers td {
+  padding: 0.35rem 0.6rem 0.35rem 0;
+  border-bottom: var(--hair) solid var(--line);
+}
+
+.unit-npu { color: var(--mint-ink); }
+/* Stated plainly: the QRB2210 has no tensor NPU, and the demo must not imply one. */
+.unit-cpu { color: var(--muted); }
+
+.bench-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.75rem;
+}
+
+.bench-card {
+  border: var(--hair) solid var(--line);
+  background: var(--ink);
+  padding: 0.75rem;
+}
+
+.bench-card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.bench-card h4 {
+  margin: 0;
+  font-size: var(--ui-base);
+  overflow-wrap: anywhere;
+}
+
+.gate {
+  font-size: var(--ui-sm);
+  white-space: nowrap;
+}
+
+.gate.pass { color: var(--mint-ink); }
+.gate.fail { color: var(--near-ink); }
+
+.bench-card dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.15rem 0.75rem;
+  margin: 0 0 0.6rem;
+  font-size: var(--ui-sm);
+}
+
+.bench-card dt { color: var(--muted); }
+.bench-card dd { margin: 0; overflow-wrap: anywhere; }
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  font-size: var(--ui-sm);
+}
+
+.bar-label {
+  color: var(--muted);
+  width: 2.2rem;
+  flex-shrink: 0;
+}
+
+.bar {
+  height: 0.55rem;
+  min-width: 2px;
+}
+
+.bar.npu { background: var(--mint); }
+.bar.cpu { background: var(--muted); }
+
+.bar-value {
+  color: var(--text);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.speedup {
+  color: var(--mint-ink);
+  font-size: var(--ui-sm);
+  margin: 0.35rem 0 0;
+}
+
+.bench-warn { color: var(--near-ink); font-size: var(--ui-sm); margin: 0.4rem 0 0; }
+.bench-error { color: var(--coral); font-size: var(--ui-sm); margin: 0.4rem 0 0; }
+
+.bench-empty, .bench-source {
+  color: var(--muted);
+  font-size: var(--ui-sm);
+  margin: 0.5rem 0 0;
+}
+
+.bench-empty code {
+  color: var(--cyan);
+  overflow-wrap: anywhere;
+}
+
+.tail { font-size: var(--ui-sm); color: var(--text); margin: 0 0 0.4rem; }
+.muted { color: var(--muted); }
+
+.fallbacks { font-size: var(--ui-sm); margin-bottom: 0.5rem; }
+.fallbacks summary { color: var(--near-ink); cursor: pointer; }
+.fallbacks ul { list-style: none; padding: 0.4rem 0 0; margin: 0; }
+.fallbacks li { padding: 0.1rem 0; overflow-wrap: anywhere; }
+.fallbacks code { color: var(--cyan); }
+
+/* ----------------------------------------------------------------- responsive */
+
+@media (max-width: 900px) {
+  .band {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+  }
+
+  .notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.25rem;
+  }
+
+  .notes p {
+    margin-bottom: 0;
+  }
+
+  .recon {
+    height: 460vh;
+  }
+
+  .recon__readout,
+  .recon__plan {
+    display: none;
+  }
+
+  .recon__title,
+  .recon__caption {
+    bottom: 8vh;
+  }
+}
+
+@media (max-width: 560px) {
+  .step,
+  .steps__loop {
+    grid-template-columns: 2.25rem 1fr;
+  }
+
+  .jobs li {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+}
