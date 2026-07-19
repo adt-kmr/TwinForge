@@ -280,3 +280,27 @@ def test_reconstruct_with_refine_stores_the_refined_ply(client, tmp_path):
     plain_ply = db.get(conn, "meshes", plain["mesh_id"])["ply_url"]
     refined_ply = db.get(conn, "meshes", refined["mesh_id"])["ply_url"]
     assert refined_ply != plain_ply
+
+
+def test_reconstruct_refine_failure_is_a_400_and_fails_the_job(client, monkeypatch):
+    """refine() has no defined ValueError/RuntimeError contract like reconstruct() does --
+    a non-(ValueError, RuntimeError) exception from it (IndexError here, standing in for
+    e.g. malformed-geometry failures from segment_points/structure_mask/voxel_dedup) must
+    still be caught, turned into a 400, and finish_job(ok=False) the job -- not propagate
+    as an unhandled 500 and leave the job stuck running forever."""
+    from orchestrator import jobs, service
+
+    def _raise(*args, **kwargs):
+        raise IndexError("boom")
+
+    monkeypatch.setattr(service, "refine_ply", _raise)
+
+    scan_id = upload_scan(client)
+    response = client.post(
+        "/reconstruct", json={"scan_id": scan_id, "mode": "fast", "refine": True})
+    assert response.status_code == 400
+    assert "refine" in response.json()["detail"]
+
+    failed = [j for j in jobs.all_jobs()
+              if j["stage"] == "reconstruct" and j["status"] == "failed"]
+    assert failed, "refine failure must mark the job as failed, not leave it running"

@@ -127,8 +127,19 @@ def reconstruct_scan(body: dict = Body(...)):
             # gracefully. Unlike the ArUco/cv2 case below, refine() has no optional
             # missing-backend dependency (Task 7): a failure here is a genuine bug or
             # bad input, so 400 is the right signal, same as reconstruct()'s own errors.
-            result = refine_ply(result["ply_path"], out_dir=artifacts_dir("meshes", scan_id))
-            result["ply_path"] = result["refined_ply_path"]
+            # refine() (and segment_points/structure_mask/voxel_dedup underneath it) has
+            # no defined ValueError/RuntimeError contract like reconstruct() does, so it
+            # gets its own broad except -- any failure here must still 400 + finish_job
+            # rather than propagate as an unhandled 500.
+            try:
+                refined = refine_ply(result["ply_path"], out_dir=artifacts_dir("meshes", scan_id))
+            except Exception as exc:
+                jobs.finish_job(job_id, ok=False, detail=str(exc))
+                raise HTTPException(400, f"refine failed: {exc}")
+            # Only update what refine() actually changed -- keep reconstruct()'s
+            # glb_path (or lack thereof) intact instead of overwriting the whole dict.
+            result["ply_path"] = refined["refined_ply_path"]
+            result["point_count"] = refined["point_count"]
     except (ValueError, RuntimeError) as exc:
         jobs.finish_job(job_id, ok=False, detail=str(exc))
         raise HTTPException(400, str(exc))
