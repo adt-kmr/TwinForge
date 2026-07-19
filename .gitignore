@@ -181,3 +181,29 @@ capture/android/**/build/
 
 # Local git worktrees (superpowers:using-git-worktrees)
 .worktrees/
+
+
+
+
+
+
+
+
+/[Aa]ssets/AssetStoreTools*
+[Ll]ibrary/
+[Tt]mp/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+/[Vv]ersioning/
+.plastic/
+UserSettings/
+**/*.csproj
+**/*.sln
+**/*.suo
+**/*.user
+**/*.unitypackage
+
