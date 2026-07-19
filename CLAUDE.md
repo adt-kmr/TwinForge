@@ -72,7 +72,7 @@ Directory names ARE the architecture:
 - `twin/rules/mapping.yaml` — label → prefab/collider mapping consumed by the (not yet
   present) `twin/unity_project/` batch-mode generator.
 - `robot/adapters/` — `TwinForgeRobot` ABC (`base.py`) with `SimRobot` and `UnoQRobot`
-  implementations; this is the seam for swapping simulated vs. physical robot backends.
+  implementations; this is the seam for swapping simulated vs. physical robot backends; ArUco marker alignment (`capture/aruco.py`) anchors twin and robot frames per Blueprint v3 §5.
 - `sarvam/task_engine/` — `TaskProvider` ABC for NL→task-graph planning; `fallback.py`'s
   `FunctionGemma` is the on-device fallback used when `SARVAM_API_KEY` is unset (online
   Sarvam provider not yet implemented).

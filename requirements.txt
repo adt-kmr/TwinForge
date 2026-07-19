@@ -17,6 +17,7 @@ PyYAML>=6.0
 #   open3d>=0.18.0        # TSDF fusion (reconstruction fast path)
 #   ultralytics>=8.2.0    # YOLO-World 2D segmentation
 #   pyserial>=3.5         # UNO Q serial bridge
+#   opencv-python>=4.9.0  # cv2.aruco marker detection (Phase A)
 #
 # The Qualcomm NPU toolchain (qai-hub + torch) lives in requirements-npu.txt — it is a
 # real install target, not a comment, because the AI Hub export path imports torch.
