@@ -22,7 +22,7 @@ class UnoQRobot(TwinForgeRobot):
         self.pose = (0.0, 0.0, 0.0)
         self.anchor_transform = None
 
-    def connect(self, aruco_image_path: str = None) -> bool:
+    def connect(self, aruco_image_path: str | None = None) -> bool:
         """Open the serial link; False (not an exception) when there is no hardware.
 
         aruco_image_path is optional boot-time alignment: the buggy observes the same
