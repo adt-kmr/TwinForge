@@ -78,7 +78,7 @@ Directory names ARE the architecture:
   `FunctionGemma` is the on-device fallback used when `SARVAM_API_KEY` is unset (online
   Sarvam provider not yet implemented).
 - `policy/finetune/` — behaviour-cloning fine-tune scripts; `policy/baselines/` holds
-  pretrained checkpoints (gitignored, pulled separately).
+  pretrained checkpoints (gitignored, pulled separately). Phase C (v3 §10–§11) adds RL path via Unity ML-Agents PPO behind `method: "rl"` in `/train`; degrades honestly (logs warning, falls back to BC) when `mlagents-learn` is absent. BC remains the default/tested path in this environment.
 - `deployment/aihub_export/` and `deployment/qairt/` — two export paths for getting a
   trained policy onto Snapdragon/Hexagon NPU hardware (Qualcomm AI Hub API vs. local QAIRT
   conversion fallback).
