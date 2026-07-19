@@ -12,14 +12,12 @@ An Edge-Native AI Platform for Automatic Digital Twin Generation, Reinforcement 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
 ![Unity](https://img.shields.io/badge/Unity-ML--Agents-black?logo=unity)
-![[ROS 2](https://docs.ros.org)](https://img.shields.io/badge/[ROS 2](https://docs.ros.org)-Humble-22314E?logo=ros)
 ![Qualcomm AI Hub](https://img.shields.io/badge/Qualcomm-AI%20Hub-E60012)
 ![Edge AI](https://img.shields.io/badge/Edge-AI-success)
 ![Digital Twin](https://img.shields.io/badge/Digital-Twin-blueviolet)
 ![Reinforcement Learning](https://img.shields.io/badge/RL-PPO-orange)
 ![Open Source](https://img.shields.io/badge/Open-Source-brightgreen)
-![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-success)
-![Made With Love](https://img.shields.io/badge/Made%20with-%E2%9D%A4-red)
+
 
 </div>
 
@@ -597,7 +595,6 @@ One of DragVerse's major goals is to maximize edge execution.
 | NavMesh | Navigation |
 | ArUco | Coordinate Alignment |
 | [OpenCV](https://opencv.org) | Vision |
-| [ROS 2](https://docs.ros.org) (optional) | Robotics Integration |
 
 ---
 
@@ -1303,7 +1300,6 @@ team@email.com
 - Swarm robotics
 - Dynamic obstacle adaptation
 - Incremental twin updates
-- [ROS 2](https://docs.ros.org)-native deployment
 - Cloud synchronization
 - Offline mobile-only workflow
 - Multi-floor mapping
@@ -1343,7 +1339,6 @@ This project builds upon numerous outstanding open-source tools and research eff
 - Segment Anything (SAM)
 - [MobileSAM](https://github.com/ChaoningZhang/MobileSAM)
 - [MiDaS](https://github.com/isl-org/MiDaS)
-- [ROS 2](https://docs.ros.org)
 
 Please refer to the official documentation of each project for licensing and attribution details.
 
@@ -1383,7 +1378,6 @@ Special thanks to:
 - [OpenCV](https://opencv.org) Community
 - [PyTorch](https://pytorch.org) Contributors
 - [ONNX Runtime](https://onnxruntime.ai) Team
-- ROS Community
 - [FastAPI](https://fastapi.tiangolo.com) Contributors
 - [React](https://react.dev) Community
 - Open Source Software Maintainers worldwide
