@@ -75,39 +75,29 @@ def test_compose_transform_works_with_non_zero_rotation():
     np.testing.assert_array_almost_equal(R @ R.T, np.eye(3), decimal=5)
 
 
-def test_detect_marker_finds_generated_marker(mocker):
-    """Test detect_marker by mocking a detected marker."""
+def test_detect_marker_finds_generated_marker():
+    """Real round-trip: generate a marker image, detect it for real (no mocking cv2)."""
     cv2 = pytest.importorskip("cv2")
 
-    # Generate a real marker image for visual verification
+    marker_id = 0
+
+    # Generate a real marker image
     aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
-    marker_image = cv2.aruco.generateImageMarker(aruco_dict, 0, 300, borderBits=10)
+    marker_image = cv2.aruco.generateImageMarker(aruco_dict, marker_id, 300, borderBits=1)
+
+    # Pad with a white quiet zone -- ArUco detection needs margin around the marker
+    # to find the border, so a bare marker with no surrounding whitespace won't detect.
+    padded = cv2.copyMakeBorder(marker_image, 50, 50, 50, 50, cv2.BORDER_CONSTANT, value=255)
 
     # Create a test image with the marker
     with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
         temp_path = f.name
-        cv2.imwrite(temp_path, marker_image)
+        cv2.imwrite(temp_path, padded)
 
     try:
-        # Mock the ArucoDetector to simulate finding a marker
-        # This avoids issues with marker detection reliability
-        mock_detector = mocker.patch("capture.aruco.cv2.aruco.ArucoDetector")
-
-        # Simulate detecting the marker at a known pose
-        marker_corners = np.array(
-            [[[[50, 50], [250, 50], [250, 250], [50, 250]]]], dtype=np.float32
-        )
-        detected_ids = np.array([[0]])
-
-        detector_instance = mock_detector.return_value
-        detector_instance.detectMarkers.return_value = (
-            [marker_corners[0]],  # corners
-            detected_ids,  # ids
-            [],  # rejected
-        )
-
-        # Call detect_marker
-        result = detect_marker(temp_path, marker_id=0)
+        # Call detect_marker for real -- default camera intrinsics (derived from
+        # image size inside detect_marker) are a plausible enough pinhole model.
+        result = detect_marker(temp_path, marker_id=marker_id)
 
         # Should find the marker
         assert result is not None
@@ -119,7 +109,7 @@ def test_detect_marker_finds_generated_marker(mocker):
         assert "transform" in result
 
         # Marker ID should match
-        assert result["marker_id"] == 0
+        assert result["marker_id"] == marker_id
 
         # tvec should be a list/array of 3 elements
         assert len(result["tvec"]) == 3
@@ -147,17 +137,15 @@ def test_marker_size_m_constant_is_defined():
     assert isinstance(MARKER_SIZE_M, (int, float))
 
 
-def test_detect_marker_raises_error_without_opencv():
-    """Test that detect_marker raises RuntimeError when cv2 is not available."""
-    # This test should only run when cv2 is NOT available
-    # We simulate this by checking if cv2 is available
-    try:
-        import cv2  # noqa: F401
+def test_detect_marker_raises_error_without_opencv(mocker):
+    """Test that detect_marker raises RuntimeError when cv2 is not available.
 
-        pytest.skip("cv2 is available, skipping test for missing cv2")
-    except ImportError:
-        pass
+    Forces the lazy `import cv2` inside detect_marker to fail regardless of whether
+    opencv-python happens to be installed in the current environment, by making
+    cv2 resolve to None in sys.modules (the standard way to simulate a missing
+    module without needing to actually uninstall it).
+    """
+    mocker.patch.dict("sys.modules", {"cv2": None})
 
-    # If we get here, cv2 is not available, so detect_marker should raise RuntimeError
     with pytest.raises(RuntimeError, match="opencv-python not installed"):
         detect_marker("dummy_path.png", marker_id=0)
