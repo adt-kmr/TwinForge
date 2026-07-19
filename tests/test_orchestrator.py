@@ -232,3 +232,21 @@ def test_reconstructing_an_empty_scan_is_a_400(client):
     response = client.post("/capture", params={"device": "test"})
     scan_id = response.json()["scan_id"]
     assert client.post("/reconstruct", json={"scan_id": scan_id}).status_code == 400
+
+
+def test_scaniverse_import_then_reconstruct_matches_chunked_upload_path(client, tmp_path):
+    """POST /capture/{scan_id}/import (Task 6, B2) ingests a Scaniverse export with no
+    scan_id pre-registered, then POST /reconstruct mode='fast' must succeed exactly as
+    it does for the chunked-upload flow (Task 5's capture/scaniverse.py + this task's
+    reconstruct() fallback for scan_dirs with only a scaniverse.ply)."""
+    points = np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [2.0, 2.0, 2.0]])
+    colors = np.array([[255, 0, 0], [0, 255, 0], [0, 0, 255]], dtype=np.uint8)
+    from reconstruction.reconstruct import write_ply
+    export_path = write_ply(str(tmp_path / "export.ply"), points, colors)
+
+    imported = client.post("/capture/new-scan/import", json={"export_path": export_path})
+    assert imported.status_code == 200, imported.text
+    assert imported.json() == {"scan_id": "new-scan", "status": "complete", "frame_count": 0}
+
+    mesh = client.post("/reconstruct", json={"scan_id": "new-scan", "mode": "fast"}).json()
+    assert mesh["point_count"] == 3

@@ -12,6 +12,7 @@ import numpy as np
 from fastapi import Body, FastAPI, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
 
 from capture.aruco import detect_marker
+from capture.scaniverse import ingest_export
 from capture.service import store
 from deployment.aihub_export.export_script import DEFAULT_DEVICE, export_model
 from orchestrator import db, jobs
@@ -85,6 +86,24 @@ def capture_complete(scan_id: str):
 @app.get("/capture/{scan_id}")
 def capture_status(scan_id: str):
     return store.status(scan_id)
+
+
+@app.post("/capture/{scan_id}/import")
+def capture_import(scan_id: str, body: dict = Body(...)):
+    """Ingest a Scaniverse export as an alternative to chunked ARCore upload.
+
+    Mirrors POST /capture (insert a scans row if new) followed by
+    POST /capture/{scan_id}/complete (mark it done), just via ingest_export instead
+    of frame chunks.
+    """
+    conn = _db()
+    if db.get(conn, "scans", scan_id) is None:
+        db.insert(conn, "scans", id=scan_id, device="scaniverse", status="uploading")
+    ingest_export(body["export_path"], store.scan_dir(scan_id))
+    frame_count = store.complete(scan_id)
+    conn.execute("UPDATE scans SET status = 'complete' WHERE id = ?", (scan_id,))
+    conn.commit()
+    return {"scan_id": scan_id, "status": "complete", "frame_count": frame_count}
 
 
 # ----------------------------------------------------------------------- reconstruct

@@ -63,7 +63,17 @@ def reconstruct(scan_dir: str, mode: str = "fast", out_dir: str | None = None,
         return run_colmap_pipeline(scan_dir, out_dir)
     frames = load_frames(scan_dir)
     if not frames:
-        raise ValueError(f"no frame_*.npz files in {scan_dir}")
+        # No chunked-upload frames -- fall back to a Scaniverse import (Task 5's
+        # capture/scaniverse.py writes scan_dir/scaniverse.ply), so /reconstruct works
+        # identically regardless of which capture path populated scan_dir.
+        scaniverse_path = os.path.join(scan_dir, "scaniverse.ply")
+        if not os.path.exists(scaniverse_path):
+            raise ValueError(f"no frame_*.npz files in {scan_dir}")
+        points, colors = read_ply(scaniverse_path)
+        ply_path = scaniverse_path
+        if os.path.abspath(out_dir) != os.path.abspath(scan_dir):
+            ply_path = write_ply(os.path.join(out_dir, "mesh.ply"), points, colors)
+        return {"ply_path": ply_path, "glb_path": None, "point_count": len(points)}
     points, colors = fuse_frames(frames, voxel_size=voxel_size)
     ply_path = write_ply(os.path.join(out_dir, "mesh.ply"), points, colors)
     return {"ply_path": ply_path, "glb_path": None, "point_count": len(points)}
