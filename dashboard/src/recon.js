@@ -1,9 +1,24 @@
 /* The reconstruction scene: one procedural room that runs the whole pipeline as the
    viewer scrolls. Points sweep in coloured by depth, cluster into labels, snap to a twin
-   wireframe, get a route traced through them, and ship quantized.
+   with real geometry and PBR materials, get a route traced through them, and ship
+   quantized.
 
-   Pure canvas — no React, no GSAP. ReconCanvas.jsx owns the scroll wiring.
-   This is illustration, not live API data. */
+   This file owns the DATA (ROOM/PROPS/PATH/STAGES/CLOUD) and the createScene() contract —
+   {resize, render(progress) -> {phase, points, objects, rest}} — exactly as before. The
+   internals of createScene() are now a Three.js scene (see recon/*.js) instead of 2D
+   canvas draws; ReconCanvas.jsx, which owns all scroll/GSAP wiring, needed no changes to
+   keep working against this same contract. This is illustration, not live API data. */
+
+import * as THREE from "three";
+
+import { createMaterials, createSignalMaterials, createShadowTexture, CLAY_COLOR } from "./recon/materials.js";
+import { buildProp, buildRoomShell } from "./recon/geometry.js";
+import { createLighting } from "./recon/lighting.js";
+import { createPointCloud } from "./recon/pointcloud.js";
+import { createPipeline } from "./recon/pipeline.js";
+import { createLabelLayer } from "./recon/labels.js";
+import { Line2 } from "three/examples/jsm/lines/Line2.js";
+import { LineGeometry } from "three/examples/jsm/lines/LineGeometry.js";
 
 export const ROOM = { w: 8, d: 6, h: 2.7 };
 
@@ -71,29 +86,9 @@ function mulberry32(seed) {
   };
 }
 
-const hexRgb = (hex) => [
-  parseInt(hex.slice(1, 3), 16),
-  parseInt(hex.slice(3, 5), 16),
-  parseInt(hex.slice(5, 7), 16),
-];
-
 const lerp = (a, b, t) => a + (b - a) * t;
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 const smooth = (t) => t * t * (3 - 2 * t);
-
-const RAMP = [hexRgb("#ff5b2e"), hexRgb("#14b09a"), hexRgb("#22307e")];
-
-/** The depth colormap: near is hot, far is indigo. */
-function depthRamp(d) {
-  const t = clamp(d, 0, 1) * 2;
-  const i = t < 1 ? 0 : 1;
-  const k = t < 1 ? t : t - 1;
-  return [
-    lerp(RAMP[i][0], RAMP[i + 1][0], k),
-    lerp(RAMP[i][1], RAMP[i + 1][1], k),
-    lerp(RAMP[i][2], RAMP[i + 1][2], k),
-  ];
-}
 
 /* -------------------------------------------------------------- cloud building */
 
@@ -133,7 +128,6 @@ function sampleBox(box, label, density, out) {
 
 function buildCloud() {
   const pts = [];
-  const T = 0.12;
 
   const floorN = Math.round(ROOM.w * ROOM.d * 52);
   for (let i = 0; i < floorN; i++) {
@@ -148,7 +142,7 @@ function buildCloud() {
     });
   }
 
-  // Walls. The front wall carries a door gap, so it is sampled in two runs.
+  const T = 0.12;
   sampleBox({ x: 0, y: 0, z: 0, w: T, d: ROOM.d, h: ROOM.h }, "wall", 26, pts);
   sampleBox({ x: ROOM.w - T, y: 0, z: 0, w: T, d: ROOM.d, h: ROOM.h }, "wall", 26, pts);
   sampleBox({ x: 0, y: ROOM.d - T, z: 0, w: ROOM.w, d: T, h: ROOM.h }, "wall", 26, pts);
@@ -162,284 +156,409 @@ function buildCloud() {
 
 export const CLOUD = buildCloud();
 
-/* ------------------------------------------------------------------ projection */
-
-const ISO_C = Math.cos(Math.PI / 6);
-const ISO_S = Math.sin(Math.PI / 6);
-const isoX = (x, y) => (x - y) * ISO_C;
-const isoY = (x, y, z) => (x + y) * ISO_S - z * 1.02;
-
 /* ----------------------------------------------------------------- the renderer */
 
-/** Wires a canvas to the scene. Returns { resize, render } — render(progress 0..1)
-    draws the frame and reports what it drew, so the caption can follow it. */
+/** Wires a canvas to the scene. Returns { resize, render, dispose } — render(progress
+    0..1) draws the frame and reports what it drew, so the caption can follow it. */
 export function createScene(canvas) {
-  const ctx = canvas.getContext("2d");
-  let W = 0;
-  let H = 0;
-  let scale = 1;
-  let ox = 0;
-  let oy = 0;
-  let roomRect = { x0: 0, y0: 0, x1: 0, y1: 0 };
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  // Transparent — the page's vellum shows through directly, so the canvas background
+  // matches it exactly rather than an opaque clear color that ACES tonemapping would
+  // otherwise shift slightly off the true vellum value. (SSAO/bloom didn't preserve alpha
+  // correctly and caused a wash-out with this on; both are gone now — see pipeline.js.)
+  renderer.setClearColor(0x000000, 0);
 
-  const px = (x, y) => ox + isoX(x, y) * scale;
-  const py = (x, y, z) => oy + isoY(x, y, z) * scale;
+  const scene = new THREE.Scene();
+  // No scene.fog: it fogs by real view-space camera distance, which for this orthographic
+  // setup is the arbitrary ~20-unit camera offset (irrelevant to framing, since ortho
+  // projection ignores distance for scale) — not the room's actual size, so any near/far
+  // choice either does nothing or washes the whole room out. The point cloud gets its own
+  // atmospheric fade directly in its shader (recon/pointcloud.js); solids don't need one at
+  // this room's scale (always fully in frame, ~8m across).
 
-  function resize() {
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
-    W = canvas.clientWidth;
-    H = canvas.clientHeight;
-    if (!W || !H) return;
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  // Orthographic isometric camera: position along the true (1,1,1) isometric axis with
+  // up=(0,0,-1) — this specific up vector (not the more obvious (0,0,1)) is what makes
+  // Three's lookAt basis match the room's axis convention (x/y floor, z height) without a
+  // mirror flip. The frustum itself is fit to the viewport in resize(), replicating the
+  // old hand-rolled projection's span-fit logic exactly, just measured from the real
+  // camera instead of a duplicated formula.
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 60);
+  const center = new THREE.Vector3(ROOM.w / 2, ROOM.d / 2, ROOM.h / 2);
+  const dir = new THREE.Vector3(1, 1, 1).normalize();
+  camera.position.copy(center).addScaledVector(dir, 20);
+  camera.up.set(0, 0, -1);
+  camera.lookAt(center);
+  camera.updateMatrixWorld(true);
 
-    const xs = [isoX(0, 0), isoX(ROOM.w, 0), isoX(0, ROOM.d), isoX(ROOM.w, ROOM.d)];
-    const ys = [
-      isoY(0, 0, ROOM.h),
-      isoY(ROOM.w, 0, ROOM.h),
-      isoY(ROOM.w, ROOM.d, 0),
-      isoY(0, ROOM.d, 0),
-    ];
-    const spanX = Math.max(...xs) - Math.min(...xs);
-    const spanY = Math.max(...ys) - Math.min(...ys);
-    const narrow = W < 900;
-    scale = Math.min((W * (narrow ? 0.92 : 0.72)) / spanX, (H * (narrow ? 0.5 : 0.68)) / spanY);
-    ox = W * (narrow ? 0.5 : 0.6) - ((Math.max(...xs) + Math.min(...xs)) / 2) * scale;
-    oy = H * (narrow ? 0.38 : 0.44) - ((Math.max(...ys) + Math.min(...ys)) / 2) * scale;
+  // Everything the pipeline builds lives in one group, scaled 2% taller on Z — the old
+  // projection's isoY used a z*1.02 coefficient (a deliberate exaggeration, not true
+  // isometric) instead of the mathematically "correct" 1.0. Baking it into the content
+  // group reproduces that exact framing with real geometry.
+  const content = new THREE.Group();
+  content.scale.set(1, 1, 1.02);
+  scene.add(content);
 
-    const pad = 18;
-    roomRect = {
-      x0: ox + Math.min(...xs) * scale - pad,
-      y0: oy + Math.min(...ys) * scale - pad,
-      x1: ox + Math.max(...xs) * scale + pad,
-      y1: oy + Math.max(...ys) * scale + pad,
-    };
+  const mats = createMaterials();
+  const signal = createSignalMaterials();
+  const lighting = createLighting(renderer, ROOM);
+  lighting.addTo(scene);
+
+  const roomShell = buildRoomShell(ROOM, mats, signal.indigoLine);
+  content.add(roomShell.group);
+  for (const m of roomShell.solids) m.material.transparent = true;
+  roomShell.edgeMaterial.opacity = 0;
+  for (const m of roomShell.solids) m.material.opacity = 0;
+
+  // Soft contact-shadow decal under every object — grounds them without the SSAOPass that
+  // had to be dropped (see pipeline.js). Fades in with the object's own build (phase 3).
+  const shadowTexture = createShadowTexture();
+  function makeShadow(cx, cy, rx, ry) {
+    const material = new THREE.MeshBasicMaterial({ map: shadowTexture, transparent: true, depthWrite: false, opacity: 0 });
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(rx * 2, ry * 2), material);
+    mesh.position.set(cx, cy, 0.004);
+    return mesh;
   }
 
-  function drawGrid(alpha) {
-    ctx.strokeStyle = `rgba(203, 209, 199, ${alpha})`;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    for (let x = 0; x <= ROOM.w; x++) {
-      ctx.moveTo(px(x, 0), py(x, 0, 0));
-      ctx.lineTo(px(x, ROOM.d), py(x, ROOM.d, 0));
+  const objects = PROPS.map((prop) => {
+    const built = buildProp(prop, mats, signal.indigoLine, signal.orange.clone());
+    content.add(built.group);
+    for (const m of built.solids) {
+      m.material.transparent = true;
+      m.material.opacity = 0;
+      m.material.color.copy(CLAY_COLOR);
+      m.material.roughness = 1;
+      m.material.metalness = 0;
+      m.castShadow = false;
+      m.receiveShadow = false;
     }
-    for (let y = 0; y <= ROOM.d; y++) {
-      ctx.moveTo(px(0, y), py(0, y, 0));
-      ctx.lineTo(px(ROOM.w, y), py(ROOM.w, y, 0));
-    }
-    ctx.stroke();
-  }
+    built.edgeMaterial.opacity = 0;
+    if (built.light) built.light.material.opacity = 0;
+    const shadow = makeShadow(prop.x + prop.w / 2, prop.y + prop.d / 2, prop.w * 0.85, prop.d * 0.85);
+    content.add(shadow);
+    return { prop, ...built, shadow };
+  });
 
-  /** Wireframe box with a stroke-in reveal driven by `t`. */
-  function drawBox(b, t, color) {
-    const c = [
-      [b.x, b.y, b.z],
-      [b.x + b.w, b.y, b.z],
-      [b.x + b.w, b.y + b.d, b.z],
-      [b.x, b.y + b.d, b.z],
-      [b.x, b.y, b.z + b.h],
-      [b.x + b.w, b.y, b.z + b.h],
-      [b.x + b.w, b.y + b.d, b.z + b.h],
-      [b.x, b.y + b.d, b.z + b.h],
-    ].map(([x, y, z]) => [px(x, y), py(x, y, z)]);
+  // Fat-line (LineMaterial) instances need `.resolution` kept in sync with the canvas'
+  // pixel size — collected here so resize() can update all of them in one place.
+  const lineMaterials = [signal.orangeLine, signal.indigoLine, roomShell.edgeMaterial, ...objects.map((o) => o.edgeMaterial)];
 
-    const edges = [
-      [0, 1], [1, 2], [2, 3], [3, 0],
-      [4, 5], [5, 6], [6, 7], [7, 4],
-      [0, 4], [1, 5], [2, 6], [3, 7],
-    ];
+  const cloud = createPointCloud(CLOUD, ROOM, LABEL_COLOR, mulberry32(9));
+  content.add(cloud.points);
 
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1.25;
-    const shown = Math.round(edges.length * clamp(t, 0, 1));
-    ctx.beginPath();
-    for (let i = 0; i < shown; i++) {
-      const [a, z] = edges[i];
-      ctx.moveTo(c[a][0], c[a][1]);
-      ctx.lineTo(c[z][0], c[z][1]);
-    }
-    ctx.stroke();
-  }
+  // Scan plane — phase 0's sweeping capture front. Cloned materials throughout this
+  // section so each signal-accent mesh's opacity is independent of its siblings'.
+  const scanPlane = new THREE.Mesh(new THREE.PlaneGeometry(ROOM.d, ROOM.h), signal.orange.clone());
+  scanPlane.rotation.y = Math.PI / 2;
+  scanPlane.material.opacity = 0.5;
+  scanPlane.visible = false;
+  content.add(scanPlane);
 
-  function drawTag(prop, alpha) {
-    if (alpha <= 0.01) return;
-    const cx = prop.x + prop.w / 2;
-    const cy = prop.y + prop.d / 2;
-    const ax = px(cx, cy);
-    const ay = py(cx, cy, prop.z + prop.h);
-    const x = ax + prop.tdx;
-    const y = ay - 24 + prop.tdy;
+  // Traced path — phase 4. Line2/LineGeometry (fat line) rather than plain THREE.Line —
+  // see the note on edgesFor() in recon/geometry.js for why.
+  const pathGeo = new LineGeometry();
+  const pathLine = new Line2(pathGeo, signal.indigoLine);
+  pathLine.visible = false;
+  pathLine.frustumCulled = false;
+  content.add(pathLine);
 
-    ctx.globalAlpha = alpha;
-    // Leader from the box top, so a nudged label still points at its object.
-    ctx.strokeStyle = "rgba(93, 101, 96, 0.5)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(ax, ay - 2);
-    ctx.lineTo(x, y + 5);
-    ctx.stroke();
-
-    ctx.textAlign = "center";
-    ctx.font = '500 11px "JetBrains Mono", ui-monospace, monospace';
-    ctx.fillStyle = "#12151a";
-    ctx.fillText(prop.label, x, y);
-    ctx.font = '400 9.5px "JetBrains Mono", ui-monospace, monospace';
-    ctx.fillStyle = "#5d6560";
-    ctx.fillText(COLLIDER[prop.label], x, y + 12);
-    ctx.globalAlpha = 1;
-  }
-
-  function drawPath(t) {
-    if (t <= 0) return;
-    const pts = PATH.map(([x, y]) => [px(x, y), py(x, y, 0.02)]);
-    ctx.strokeStyle = "rgba(34, 48, 126, 0.85)";
-    ctx.lineWidth = 2;
-    ctx.setLineDash([6, 4]);
-    ctx.beginPath();
-    ctx.moveTo(pts[0][0], pts[0][1]);
-    const span = (pts.length - 1) * clamp(t, 0, 1);
-    for (let i = 1; i < pts.length; i++) {
+  function updatePathVertices(tFrac) {
+    const span = (PATH.length - 1) * clamp(tFrac, 0, 1);
+    const verts = [PATH[0]];
+    for (let i = 1; i < PATH.length; i++) {
       const seg = clamp(span - (i - 1), 0, 1);
       if (seg <= 0) break;
-      ctx.lineTo(lerp(pts[i - 1][0], pts[i][0], seg), lerp(pts[i - 1][1], pts[i][1], seg));
+      verts.push([lerp(PATH[i - 1][0], PATH[i][0], seg), lerp(PATH[i - 1][1], PATH[i][1], seg)]);
     }
-    ctx.stroke();
-    ctx.setLineDash([]);
+    if (verts.length < 2) {
+      pathLine.visible = false;
+      return;
+    }
+    const flat = [];
+    for (const [x, y] of verts) flat.push(x, y, 0.02);
+    pathGeo.setPositions(flat);
+    pathLine.computeLineDistances();
   }
 
-  function drawRobot(t) {
-    const span = (PATH.length - 1) * clamp(t, 0, 1);
+  // Phase 5: the robot prop itself drives the route — no separate abstract marker. It
+  // spends phases 3-4 parked at its dock (prop.x/y/z, built like every other object);
+  // driveRobot() repositions/reorients the same mesh, spins its wheels, and hands the
+  // label layer a live anchor so the "robot" tag tracks it instead of staying pinned to
+  // the empty dock.
+  const robotObj = objects.find((o) => o.prop.label === "robot");
+  const robotDock = new THREE.Vector3(robotObj.prop.x, robotObj.prop.y, robotObj.prop.z);
+  const robotTagAnchor = new THREE.Vector3();
+  const robotIndex = objects.indexOf(robotObj);
+
+  function driveRobot(tFrac) {
+    const span = (PATH.length - 1) * clamp(tFrac, 0, 1);
     const i = Math.min(PATH.length - 2, Math.floor(span));
     const k = span - i;
     const wx = lerp(PATH[i][0], PATH[i + 1][0], k);
     const wy = lerp(PATH[i][1], PATH[i + 1][1], k);
-    const x = px(wx, wy);
-    const y = py(wx, wy, 0.28);
-    ctx.fillStyle = "#ff5b2e";
-    ctx.beginPath();
-    ctx.arc(x, y, 5.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = "rgba(255, 91, 46, 0.35)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.arc(x, y, 11 + Math.sin(span * 6) * 1.5, 0, Math.PI * 2);
-    ctx.stroke();
+    const heading = Math.atan2(PATH[i + 1][1] - PATH[i][1], PATH[i + 1][0] - PATH[i][0]);
+
+    // The group's local origin is the bbox's min corner (every object is built that way —
+    // see geometry.js), not its visual center — so rotating and scaling the group directly
+    // swings/drifts that corner's *center* away from (wx, wy) by a growing amount as
+    // heading and scale move away from 0/1. Compensating the position by the rotated,
+    // scaled center offset keeps the robot's actual visual center pinned to the path
+    // point, exactly like every other object's center is pinned to its own bbox.
+    const cx = robotObj.prop.w / 2;
+    const cy = robotObj.prop.d / 2;
+    // Eases up to 45% larger over the first sliver of the drive — deliberately bold,
+    // because the robot's actual footprint (0.45m in an 8x6m room) is small enough that a
+    // subtle emphasis doesn't read at all from the isometric distance this scene is
+    // always viewed at. It's the only thing in the room that ever moves or scales, so a
+    // clear size jump reads as "the active element", not as a glitch.
+    const s = 1 + 0.45 * Math.min(tFrac * 5, 1);
+    const cosH = Math.cos(heading);
+    const sinH = Math.sin(heading);
+    const offX = s * (cx * cosH - cy * sinH);
+    const offY = s * (cx * sinH + cy * cosH);
+    robotObj.group.position.set(wx - offX, wy - offY, robotObj.prop.z);
+    robotObj.group.rotation.z = heading;
+    robotObj.group.scale.setScalar(s);
+
+    const spin = span * 8;
+    for (let wi = 2; wi < robotObj.solids.length; wi++) robotObj.solids[wi].rotation.set(0, spin, Math.PI / 2);
+
+    robotObj.shadow.position.set(wx, wy, 0.004);
+
+    // Anchored to the beacon's height, not the body's — the beacon is the part that's
+    // actually always visible (see the note in geometry.js's buildRobot), so that's what
+    // the tag's leader line should point at.
+    robotTagAnchor.set(wx, wy, robotObj.prop.h * 3);
+    content.localToWorld(robotTagAnchor);
+    labels.setAnchorOverride(robotIndex, robotTagAnchor);
   }
 
-  /** The scan plane — the one place the hot end of the ramp is spent. */
-  function drawScanPlane(sx) {
-    const x = ROOM.w * sx;
-    ctx.strokeStyle = "#ff5b2e";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(px(x, 0), py(x, 0, ROOM.h));
-    ctx.lineTo(px(x, 0), py(x, 0, 0));
-    ctx.lineTo(px(x, ROOM.d), py(x, ROOM.d, 0));
-    ctx.lineTo(px(x, ROOM.d), py(x, ROOM.d, ROOM.h));
-    ctx.stroke();
+  function parkRobot() {
+    robotObj.group.position.copy(robotDock);
+    robotObj.group.rotation.z = 0;
+    robotObj.group.scale.setScalar(1);
+    robotObj.shadow.position.set(robotObj.prop.x + robotObj.prop.w / 2, robotObj.prop.y + robotObj.prop.d / 2, 0.004);
+    labels.setAnchorOverride(robotIndex, null);
   }
 
-  /** int8 blocks settling over the twin, clipped to the room so it reads as the model
-      being quantized rather than a grid dropped over the page. */
-  function drawQuantize(t) {
-    if (t <= 0.01) return;
-    const step = 24;
-    const { x0, y0, x1, y1 } = roomRect;
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(x0, y0, x1 - x0, y1 - y0);
-    ctx.clip();
-    ctx.globalAlpha = 0.22 * t;
-    ctx.strokeStyle = "rgba(34, 48, 126, 0.5)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    for (let x = x0; x <= x1; x += step) {
-      ctx.moveTo(x, y0);
-      ctx.lineTo(x, y1);
+  // Quantize grid — phase 5, int8 blocks settling over the twin.
+  const cellSize = 0.32;
+  const cols = Math.max(1, Math.round(ROOM.w / cellSize));
+  const rows = Math.max(1, Math.round(ROOM.d / cellSize));
+  const quantMat = signal.indigo.clone();
+  quantMat.opacity = 0;
+  const quantize = new THREE.InstancedMesh(
+    new THREE.BoxGeometry(cellSize * 0.86, 0.01, cellSize * 0.86),
+    quantMat,
+    cols * rows
+  );
+  {
+    const m4 = new THREE.Matrix4();
+    let qi = 0;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        m4.makeTranslation((c + 0.5) * cellSize, (r + 0.5) * cellSize, 0.015);
+        quantize.setMatrixAt(qi++, m4);
+      }
     }
-    for (let y = y0; y <= y1; y += step) {
-      ctx.moveTo(x0, y);
-      ctx.lineTo(x1, y);
-    }
-    ctx.stroke();
-    ctx.restore();
+  }
+  quantize.visible = false;
+  content.add(quantize);
+  const quantizeAnchor = new THREE.Vector3(0, 0, 0);
 
-    ctx.globalAlpha = t;
-    ctx.font = '500 10px "JetBrains Mono", ui-monospace, monospace';
-    ctx.textAlign = "left";
-    ctx.fillStyle = "#22307e";
-    ctx.fillText("int8 · on-device", x0, y0 - 10);
-    ctx.globalAlpha = 1;
+  const pipeline = createPipeline(renderer, scene, camera);
+  const labels = createLabelLayer(canvas, PROPS, COLLIDER, content);
+
+  // Sorted reveal thresholds for an O(log n) visible-point-count readout, matching the
+  // shader's own reveal test instead of walking every point on the CPU each frame.
+  const revealSorted = CLOUD.map((p) => p.x / ROOM.w).sort((a, b) => a - b);
+  function countVisible(sweep) {
+    const threshold = sweep - 0.01 / 7;
+    let lo = 0;
+    let hi = revealSorted.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (revealSorted[mid] < threshold) lo = mid + 1;
+      else hi = mid;
+    }
+    return lo;
+  }
+
+  let W = 0;
+  let H = 0;
+  let dpr = 1;
+
+  function resize() {
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = canvas.clientWidth;
+    H = canvas.clientHeight;
+    if (!W || !H) return;
+
+    renderer.setPixelRatio(dpr);
+    renderer.setSize(W, H, false);
+
+    for (const m of lineMaterials) m.resolution.set(W, H);
+
+    // Measure the room's true camera-space extent, then fit it to the viewport with the
+    // exact same span/centering logic (and breakpoint) the old resize() used — just
+    // sourced from the real camera instead of a hand-duplicated projection formula.
+    const view = camera.matrixWorld.clone().invert();
+    const corners = [];
+    for (const cx of [0, ROOM.w]) {
+      for (const cy of [0, ROOM.d]) {
+        for (const cz of [0, ROOM.h * 1.02]) {
+          corners.push(new THREE.Vector3(cx, cy, cz).applyMatrix4(view));
+        }
+      }
+    }
+    const xs = corners.map((c) => c.x);
+    const ys = corners.map((c) => c.y);
+    const spanX = Math.max(...xs) - Math.min(...xs);
+    const spanY = Math.max(...ys) - Math.min(...ys);
+    const narrow = W < 900;
+    const scale = Math.min((W * (narrow ? 0.92 : 0.72)) / spanX, (H * (narrow ? 0.5 : 0.68)) / spanY);
+    const ox = W * (narrow ? 0.5 : 0.6) - ((Math.max(...xs) + Math.min(...xs)) / 2) * scale;
+    const oy = H * (narrow ? 0.38 : 0.44) - ((Math.max(...ys) + Math.min(...ys)) / 2) * scale;
+
+    camera.left = -ox / scale;
+    camera.right = (W - ox) / scale;
+    camera.top = -oy / scale;
+    camera.bottom = (H - oy) / scale;
+    camera.near = 0.1;
+    camera.far = 60;
+    camera.updateProjectionMatrix();
   }
 
   function render(progress) {
     if (!W || !H) return { phase: 0, points: 0, objects: 0, rest: true };
-    ctx.clearRect(0, 0, W, H);
 
-    // Hold on the title, then run six phases across the rest of the track.
     const rest = progress <= 0.1;
     const run = clamp((progress - 0.1) / 0.86, 0, 1);
     const f = run * 6;
     const phase = Math.min(5, Math.floor(f));
     const t = smooth(clamp(f - phase, 0, 1));
 
-    // Before the first scroll the room hasn't been captured yet, so the grid stays off —
-    // the resting circular shader stands in for it until motion starts the scan.
-    if (!rest) drawGrid(phase >= 3 ? 1 : 0.8);
+    // Micro camera settle: each phase eases in from a hair of extra zoom instead of
+    // snapping straight to rest — the "camera smoothing" the mission calls for, kept
+    // small enough it reads as focus settling, never as the camera actually reframing.
+    // Position/angle/frustum (set in resize()) are untouched — this is the one place a
+    // camera property changes per frame, and it's ±1%.
+    camera.zoom = 1 - 0.01 * (1 - t);
+    camera.updateProjectionMatrix();
 
     const sweep = phase === 0 ? t : 1;
-    const jitter = phase === 0 ? 1 : phase === 1 ? 1 - t : 0;
+    const jitterMix = phase === 0 ? 1 : phase === 1 ? 1 - t : 0;
     const labelMix = phase === 2 ? t : phase > 2 ? 1 : 0;
     const fade = phase === 3 ? lerp(1, 0.22, t) : phase > 3 ? 0.22 : 1;
-    const size = phase >= 1 ? 1.6 : 2;
+    const sizePx = (phase >= 1 ? 1.6 : 2) * dpr;
+    cloud.setUniforms({ sweep, jitterMix, labelMix, fade, sizePx });
 
-    let visible = 0;
-    for (const p of CLOUD) {
-      const reveal = clamp((sweep - p.x / ROOM.w) * 7, 0, 1);
-      if (reveal <= 0.01) continue;
-      visible++;
-
-      const x = p.x + p.jx * jitter;
-      const y = p.y + p.jy * jitter;
-      const z = p.z + p.jz * jitter;
-      const depth = (p.x + p.y) / (ROOM.w + ROOM.d);
-
-      let c = depthRamp(depth);
-      if (labelMix > 0) {
-        const l = hexRgb(LABEL_COLOR[p.label]);
-        c = [
-          lerp(c[0], l[0], labelMix),
-          lerp(c[1], l[1], labelMix),
-          lerp(c[2], l[2], labelMix),
-        ];
-      }
-
-      ctx.fillStyle = `rgba(${c[0] | 0}, ${c[1] | 0}, ${c[2] | 0}, ${reveal * fade})`;
-      ctx.fillRect(px(x, y) - size / 2, py(x, y, z) - size / 2, size, size);
+    // Room shell fades in alongside segmentation, matching the old floor grid's timing.
+    // ponytail: a flat opacity ramp rather than the props' full wireframe->fill->material
+    // sequence — the shell is the background the objects sit in, not a staged "object"
+    // with its own tag; upgrade path is giving it the same per-object treatment as PROPS
+    // if the room shell ever needs its own reveal beat.
+    const shellAlpha = phase < 2 ? 0 : phase === 2 ? t * 0.8 : phase === 3 ? lerp(0.8, 1, t) : 1;
+    const shellSettled = phase >= 3;
+    for (const m of roomShell.solids) {
+      m.material.opacity = shellAlpha;
+      // Opaque once fully resolved: dozens of meshes staying `transparent` forever means
+      // Three sorts them back-to-front by distance instead of depth-testing them properly,
+      // which was silently hiding the thin path/marker signal accents behind "opaque-
+      // looking" (opacity 1) walls that happened to sort afterward. Flipping back to
+      // opaque once the fade-in is done fixes that and is cheaper to render besides.
+      m.material.transparent = phase <= 3;
+      m.castShadow = shellSettled;
+      m.receiveShadow = shellSettled;
     }
+    roomShell.edgeMaterial.opacity = shellAlpha * 0.6;
 
-    if (phase === 0 && t > 0.01 && t < 0.99) drawScanPlane(t);
+    scanPlane.visible = phase === 0 && t > 0.01 && t < 0.99;
+    if (scanPlane.visible) scanPlane.position.set(ROOM.w * t, ROOM.d / 2, ROOM.h / 2);
 
+    // Phase 3: points converge -> wireframe grows -> surface fills -> material resolves
+    // -> lighting settles, staggered per object exactly as the original per-box reveal.
+    // ponytail: the wireframe reveal fades the edge set's opacity in as one unit, rather
+    // than growing edge-by-edge like the old 12-edge box did — with real furniture meshes
+    // there can be 60+ edges per object, and matching that reveal exactly would need
+    // consistent per-edge ordering across composite meshes for a subtle flourish nobody
+    // would consciously notice; upgrade path is per-edge growth via setDrawRange if this
+    // stage ever needs to read as more mechanical.
+    const tagAlphas = new Array(objects.length).fill(0);
     if (phase >= 3) {
       const build = phase === 3 ? t : 1;
-      PROPS.forEach((prop, i) => {
-        const local = clamp(build * PROPS.length - i, 0, 1);
-        drawBox(prop, local, prop.label === "robot" ? "#ff5b2e" : "#22307e");
-        drawTag(prop, phase === 3 ? clamp(local * 1.5 - 0.4, 0, 1) : 1);
+      objects.forEach((o, i) => {
+        const local = clamp(build * objects.length - i, 0, 1);
+        // smooth() on every sub-stage, not just the material crossfade — same three
+        // windows (0-0.35 / 0.35-0.65 / 0.65-0.85), just eased ramps instead of linear
+        // ones so the wireframe-grows -> surface-fills handoff doesn't read as a snap.
+        const edgeT = smooth(clamp(local / 0.35, 0, 1));
+        const fillT = smooth(clamp((local - 0.35) / 0.3, 0, 1));
+        const materialT = smooth(clamp((local - 0.65) / 0.2, 0, 1));
+        const settled = local >= 0.85;
+
+        // Edges stay visible longer as the fill comes in (0.45 instead of the previous
+        // 0.7 falloff) — the wireframe reveal should read as a distinct beat, not a flash.
+        o.edgeMaterial.opacity = edgeT * (1 - fillT * 0.45);
+        for (const m of o.solids) {
+          m.material.opacity = fillT;
+          m.material.transparent = phase === 3; // see the room-shell note above
+          m.material.color.copy(CLAY_COLOR).lerp(m.userData.target.color, materialT);
+          m.material.roughness = lerp(1, m.userData.target.roughness, materialT);
+          m.material.metalness = lerp(0, m.userData.target.metalness, materialT);
+          m.castShadow = settled;
+          m.receiveShadow = settled;
+        }
+        if (o.light) o.light.material.opacity = fillT;
+        o.shadow.material.opacity = fillT * 0.85;
+        tagAlphas[i] = phase === 3 ? smooth(clamp(local * 1.5 - 0.4, 0, 1)) : 1;
+      });
+    } else {
+      objects.forEach((o) => {
+        o.edgeMaterial.opacity = 0;
+        o.shadow.material.opacity = 0;
+        if (o.light) o.light.material.opacity = 0;
+        for (const m of o.solids) m.material.opacity = 0;
       });
     }
 
-    if (phase === 4) drawPath(clamp((t - 0.15) / 0.85, 0, 1));
+    if (phase === 4) {
+      pathLine.visible = true;
+      updatePathVertices(clamp((t - 0.15) / 0.85, 0, 1));
+    } else if (phase === 5) {
+      pathLine.visible = true;
+      updatePathVertices(1);
+    } else {
+      pathLine.visible = false;
+    }
     if (phase === 5) {
-      drawPath(1);
-      drawQuantize(clamp((t - 0.25) / 0.75, 0, 1));
-      drawRobot(t);
+      const qt = clamp((t - 0.25) / 0.75, 0, 1);
+      quantize.visible = qt > 0.01;
+      quantMat.opacity = 0.22 * qt;
+      quantizeAnchor.set(0, 0, ROOM.h * 1.02);
+      content.localToWorld(quantizeAnchor);
+      labels.renderQuantizeCaption(camera, quantizeAnchor, qt);
+      driveRobot(t);
+    } else {
+      quantize.visible = false;
+      labels.renderQuantizeCaption(camera, quantizeAnchor, 0);
+      parkRobot();
     }
 
-    return { phase, points: visible, objects: phase >= 2 ? PROPS.length : 0, rest };
+    labels.setAlpha(tagAlphas);
+    labels.render(camera);
+
+    pipeline.render();
+
+    return { phase, points: countVisible(sweep), objects: phase >= 2 ? objects.length : 0, rest };
   }
 
-  return { resize, render };
+  function dispose() {
+    lighting.dispose();
+    cloud.dispose();
+    labels.dispose();
+    renderer.dispose();
+  }
+
+  content.updateMatrixWorld(true);
+  return { resize, render, dispose };
 }
