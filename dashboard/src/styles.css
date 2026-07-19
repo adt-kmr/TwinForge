@@ -1408,3 +1408,57 @@ svg.plan {
   line-height: 1.5;
   color: var(--body);
 }
+
+/* Model selector — same pattern as robot options */
+.model-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.model-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border: var(--hair) solid var(--line);
+  background: var(--vellum);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: var(--ui-base);
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms;
+  text-align: left;
+}
+
+.model-option:hover {
+  background: var(--panel);
+  border-color: var(--muted);
+}
+
+.model-option.is-selected {
+  background: var(--near-ink);
+  border-color: var(--near-ink);
+  color: var(--vellum);
+}
+
+.model-option.is-selected strong {
+  color: var(--vellum);
+}
+
+.model-option.is-selected p {
+  color: var(--vellum);
+}
+
+.model-option strong {
+  font-weight: 700;
+  font-size: var(--ui-lg);
+}
+
+.model-option p {
+  margin: 0;
+  font-size: var(--ui-sm);
+  line-height: 1.5;
+  color: var(--body);
+}

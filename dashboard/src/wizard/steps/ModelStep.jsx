@@ -1,22 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
 
-/**
- * Placeholder — Task 18 wires this to a static AI model picker (semantic model
- * variant / RL warm-start checkpoint). The twin is already built by CaptureStep
- * (Task 16 chains reconstruct/segment/generate-twin) by the time the operator
- * reaches this step — do not re-run that chain here.
- */
+const MODEL_OPTIONS = [
+  {
+    key: "geometry-only",
+    label: "Geometry-Only",
+    description: "Voxel clustering with structural heuristics, no ML weights",
+  },
+  {
+    key: "yolo-world",
+    label: "YOLO-World",
+    description: "Enhanced image segmentation for richer semantic labeling",
+  },
+];
+
 export default function ModelStep({ onNext }) {
+  const [selected, setSelected] = useState(null);
+
+  const handleSelect = (key) => {
+    setSelected(key);
+    onNext({ modelChoice: key });
+  };
+
   return (
     <div className="wizard__step">
-      <h2>Which AI model do you want to use?</h2>
+      <h2>Choose a semantic model</h2>
       <p className="prose">
-        Choose the perception/policy base for this run. This step will show a picker for the
-        semantic model variant and any available warm-start checkpoint.
+        Select the perception backend for twin labeling. Geometry-only is fast and works
+        offline; YOLO-World adds visual understanding when available.
       </p>
-      <button className="btn btn--solid" onClick={() => onNext({})}>
-        Continue
-      </button>
+
+      <div className="model-options">
+        {MODEL_OPTIONS.map((option) => (
+          <button
+            key={option.key}
+            className={`model-option ${selected === option.key ? "is-selected" : ""}`}
+            onClick={() => handleSelect(option.key)}
+          >
+            <strong>{option.label}</strong>
+            <p>{option.description}</p>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
