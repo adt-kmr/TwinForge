@@ -11,6 +11,7 @@ import os
 import numpy as np
 from fastapi import Body, FastAPI, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
 
+from capture.aruco import detect_marker
 from capture.service import store
 from deployment.aihub_export.export_script import DEFAULT_DEVICE, export_model
 from orchestrator import db, jobs
@@ -155,9 +156,30 @@ def generate_twin_endpoint(body: dict = Body(...)):
             400, f"no semantic objects for mesh {mesh_id!r}; POST /segment first")
 
     result = generate_twin(objects, artifacts_dir("twins", mesh_id))
+
+    anchor_transform_json = None
+    aruco_image_path = body.get("aruco_image_path")
+    if aruco_image_path:
+        try:
+            marker = detect_marker(
+                aruco_image_path, camera_intrinsics=body.get("camera_intrinsics"))
+        except RuntimeError:
+            # cv2 (the optional 'vision' extra) isn't installed -- degrade gracefully
+            # rather than failing twin generation over a missing anchor, matching the
+            # "every stage runs without optional heavy deps" convention.
+            marker = None
+        except FileNotFoundError as exc:
+            # The caller explicitly asked for anchoring and gave a bad path -- that's
+            # a real request error, not a missing-dependency degrade.
+            jobs.finish_job(job_id, ok=False, detail=str(exc))
+            raise HTTPException(400, str(exc))
+        if marker is not None:
+            anchor_transform_json = json.dumps(marker["transform"])
+
     twin_id = db.insert(conn, "twins", mesh_id=mesh_id,
                         unity_scene_url=result["scene_path"],
-                        navmesh_url=result["navmesh_path"])
+                        navmesh_url=result["navmesh_path"],
+                        anchor_transform_json=anchor_transform_json)
     jobs.finish_job(job_id, detail=twin_id)
     return {"twin_id": twin_id, "job_id": job_id,
             "unity_scene_url": result["scene_path"],

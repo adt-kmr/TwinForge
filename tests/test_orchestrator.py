@@ -133,6 +133,32 @@ def test_train_rejects_a_policy_that_fails_the_sim_gate(client):
     assert response.json()["detail"]["sim_success_rate"] < 0.6
 
 
+def test_generate_twin_with_aruco_marker_stores_anchor_transform(client, tmp_path):
+    """When an ArUco image is supplied and cv2 can detect it, the resulting 4x4
+    transform is persisted on the twin and round-trips through db.get."""
+    cv2 = pytest.importorskip("cv2")
+
+    scan_id = upload_scan(client)
+    mesh = client.post("/reconstruct", json={"scan_id": scan_id}).json()
+    client.post("/segment", json={"mesh_id": mesh["mesh_id"]})
+
+    aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
+    marker_image = cv2.aruco.generateImageMarker(aruco_dict, 0, 300, borderBits=1)
+    # Quiet-zone padding, same as tests/test_aruco.py -- detection needs margin.
+    padded = cv2.copyMakeBorder(marker_image, 50, 50, 50, 50, cv2.BORDER_CONSTANT, value=255)
+    image_path = tmp_path / "marker.png"
+    cv2.imwrite(str(image_path), padded)
+
+    twin = client.post("/generate-twin", json={
+        "mesh_id": mesh["mesh_id"], "aruco_image_path": str(image_path)}).json()
+
+    conn = db.connect()
+    stored = db.get(conn, "twins", twin["twin_id"])
+    assert stored["anchor_transform_json"] is not None
+    transform = json.loads(stored["anchor_transform_json"])
+    assert len(transform) == 4 and all(len(row) == 4 for row in transform)
+
+
 def test_generate_twin_requires_segmentation_first(client):
     scan_id = upload_scan(client)
     mesh = client.post("/reconstruct", json={"scan_id": scan_id}).json()
