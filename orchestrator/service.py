@@ -103,6 +103,7 @@ async def capture_import(scan_id: str | None = None, file: UploadFile | None = N
         with open(source_path, "wb") as out:
             shutil.copyfileobj(file.file, out)
 
+    assert source_path is not None
     job_id = jobs.create_job("capture_import")
     try:
         result = ingest_export(source_path, store.scan_dir(scan_id))

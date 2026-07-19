@@ -20,6 +20,7 @@ import argparse
 import json
 import os
 import sys
+import typing
 
 BENCHMARK_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "benchmarks")
 
@@ -313,7 +314,7 @@ def benchmark(slug: str, device_name: str, compare: bool = False,
                 "meets_80pct_npu_gate": False}
 
     npu = _combine_components(parts)
-    record = {"model": slug, "npu": npu}
+    record: typing.Dict[str, typing.Any] = {"model": slug, "npu": npu}
     if len(parts) > 1:
         record["components"] = parts
 

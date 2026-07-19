@@ -6,6 +6,7 @@ mode='fidelity'-> COLMAP + gsplat/nerfstudio; requires colmap on PATH
 import glob
 import os
 import shutil
+import typing
 
 import numpy as np
 
@@ -56,7 +57,8 @@ def _parse_ply_header(f) -> tuple:
     """
     if f.readline().strip() != b"ply":
         raise ValueError("not a PLY file (missing 'ply' magic)")
-    fmt, elements = None, []
+    fmt: typing.Optional[str] = None
+    elements: typing.List[typing.Tuple[str, int, typing.List[typing.Tuple[str, typing.Optional[str]]]]] = []
     while True:
         line = f.readline()
         if not line:
@@ -116,7 +118,7 @@ def read_ply(path: str) -> tuple:
             return np.zeros((0, 3)), np.zeros((0, 3), dtype=np.uint8)
 
         if fmt == "ascii":
-            columns = [[] for _ in props]
+            columns: typing.List[typing.List[float]] = [[] for _ in props]
             read = 0
             for line in f:
                 vals = line.split()
