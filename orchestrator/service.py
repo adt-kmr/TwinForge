@@ -18,6 +18,8 @@ from deployment.aihub_export.export_script import DEFAULT_DEVICE, export_model
 from orchestrator import db, jobs
 from policy.evaluate import SIM_GATE, evaluate, inflate, record_demos
 from policy.finetune.train_bc import finetune_bc, make_baseline
+from policy.rl.bridge import onnx_success_rate, train_ppo
+from policy.rl.config import build_trainer_config
 from reconstruction.reconstruct import read_ply, reconstruct
 from reconstruction.splat.refine import refine as refine_ply
 from robot.adapters.registry import get_robot
@@ -298,6 +300,44 @@ def train(body: dict = Body(...)):
     if goal is None:
         jobs.finish_job(job_id, ok=False, detail="navmesh fully blocked")
         raise HTTPException(400, "navmesh has no traversable cell to train against")
+
+    method = body.get("method", "bc")
+    if method == "rl":
+        # Phase C (v3 6.2): PPO via ML-Agents, trained against a live Unity Editor
+        # session (unity_env_path=None -- no built Unity executable in this pipeline).
+        activity = body.get("activity", "walk_to_point")
+        config_path = build_trainer_config(
+            activity, twin,
+            out_path=os.path.join(artifacts_dir("rl_configs", twin_id), f"{activity}.yaml"))
+        run_id = f"{twin_id}-{activity}-{job_id}"
+        rl_result = train_ppo(config_path=config_path, unity_env_path=None,
+                              run_id=run_id, out_dir=artifacts_dir("rl_runs", twin_id))
+
+        if not rl_result["trained"]:
+            jobs.finish_job(job_id, ok=False, detail=rl_result["reason"])
+            raise HTTPException(503, {
+                "error": "RL trainer unavailable",
+                "detail": rl_result["reason"],
+            })
+
+        result = onnx_success_rate(onnx_path=rl_result["onnx_path"], navmesh=navmesh,
+                                   goal=goal, episodes=20)
+        if not result["passed"]:
+            jobs.finish_job(job_id, ok=False, detail=result)
+            # Section 11.5: an unvalidated policy must never reach hardware.
+            raise HTTPException(409, {
+                "error": "policy failed sim validation",
+                "sim_success_rate": result["success_rate"],
+                "required": SIM_GATE,
+            })
+
+        policy_id = db.insert(conn, "policies", twin_id=twin_id, task_graph_id=graph_id,
+                              base_checkpoint=run_id,
+                              finetuned_ckpt_url=rl_result["onnx_path"],
+                              sim_success_rate=result["success_rate"])
+        jobs.finish_job(job_id, detail=policy_id)
+        return {"policy_id": policy_id, "job_id": job_id,
+                "sim_success_rate": result["success_rate"]}
 
     demos = body.get("demonstrations") or record_demos(navmesh, goal, n=10)
     policy = finetune_bc(make_baseline(OBS_DIM, ACT_DIM), demos)

@@ -133,6 +133,82 @@ def test_train_rejects_a_policy_that_fails_the_sim_gate(client):
     assert response.json()["detail"]["sim_success_rate"] < 0.6
 
 
+def test_train_rl_reports_503_when_mlagents_learn_is_unavailable(client):
+    """Real, unmonkeypatched path: this dev environment has no mlagents-learn on PATH
+    (Task 12 brief + policy/rl/bridge.py's train_ppo contract), so method: "rl" must
+    surface a 503 "trainer unavailable" -- never a silent fallback to a fake BC success."""
+    import shutil
+
+    assert shutil.which("mlagents-learn") is None, \
+        "this test asserts the genuine absence-path; it would need reworking if " \
+        "mlagents-learn were actually installed here"
+
+    scan_id = upload_scan(client)
+    mesh = client.post("/reconstruct", json={"scan_id": scan_id}).json()
+    client.post("/segment", json={"mesh_id": mesh["mesh_id"]})
+    twin = client.post("/generate-twin", json={"mesh_id": mesh["mesh_id"]}).json()
+
+    response = client.post("/train", json={"twin_id": twin["twin_id"], "method": "rl"})
+
+    assert response.status_code == 503
+    body = response.json()["detail"]
+    assert body["error"] == "RL trainer unavailable"
+    assert body["detail"] == "mlagents-learn not installed"
+
+
+def test_train_rl_succeeds_and_inserts_a_policy_when_trainer_is_available(client, monkeypatch):
+    """No real mlagents-learn/onnxruntime in this environment, so train_ppo and
+    onnx_success_rate are monkeypatched to simulate a trained, gate-passing run --
+    this exercises the success branch's wiring (config path, run_id, DB insert
+    columns), not the real ML-Agents subprocess."""
+    from orchestrator import service
+
+    monkeypatch.setattr(service, "train_ppo", lambda **kwargs: {
+        "trained": True, "reason": None, "onnx_path": "/tmp/fake_policy.onnx"})
+    monkeypatch.setattr(service, "onnx_success_rate", lambda **kwargs: {
+        "success_rate": 0.9, "episodes": 20, "passed": True, "reason": None})
+
+    scan_id = upload_scan(client)
+    mesh = client.post("/reconstruct", json={"scan_id": scan_id}).json()
+    client.post("/segment", json={"mesh_id": mesh["mesh_id"]})
+    twin = client.post("/generate-twin", json={"mesh_id": mesh["mesh_id"]}).json()
+
+    response = client.post("/train", json={
+        "twin_id": twin["twin_id"], "method": "rl", "activity": "walk_to_point"})
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["sim_success_rate"] == 0.9
+
+    conn = db.connect()
+    stored = db.get(conn, "policies", body["policy_id"])
+    assert stored["finetuned_ckpt_url"] == "/tmp/fake_policy.onnx"
+    assert stored["base_checkpoint"] != "zero-baseline"
+    assert twin["twin_id"] in stored["base_checkpoint"]
+
+
+def test_train_rl_rejects_a_policy_that_fails_the_sim_gate(client, monkeypatch):
+    """Monkeypatched the same way as the success test above -- simulates a trained ONNX
+    policy that fails SIM_GATE, asserting the RL path applies the identical 409 shape
+    the BC path already uses (test_train_rejects_a_policy_that_fails_the_sim_gate)."""
+    from orchestrator import service
+
+    monkeypatch.setattr(service, "train_ppo", lambda **kwargs: {
+        "trained": True, "reason": None, "onnx_path": "/tmp/fake_policy.onnx"})
+    monkeypatch.setattr(service, "onnx_success_rate", lambda **kwargs: {
+        "success_rate": 0.1, "episodes": 20, "passed": False, "reason": None})
+
+    scan_id = upload_scan(client)
+    mesh = client.post("/reconstruct", json={"scan_id": scan_id}).json()
+    client.post("/segment", json={"mesh_id": mesh["mesh_id"]})
+    twin = client.post("/generate-twin", json={"mesh_id": mesh["mesh_id"]}).json()
+
+    response = client.post("/train", json={"twin_id": twin["twin_id"], "method": "rl"})
+
+    assert response.status_code == 409
+    assert response.json()["detail"]["sim_success_rate"] == 0.1
+
+
 def test_generate_twin_with_aruco_marker_stores_anchor_transform(client, tmp_path):
     """When an ArUco image is supplied and cv2 can detect it, the resulting 4x4
     transform is persisted on the twin and round-trips through db.get."""
