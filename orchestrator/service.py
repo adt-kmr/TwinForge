@@ -23,6 +23,7 @@ from policy.rl.config import build_trainer_config
 from reconstruction.reconstruct import read_ply, reconstruct
 from reconstruction.splat.refine import refine as refine_ply
 from robot.adapters.registry import get_robot
+from sarvam.task_engine import whisper_fallback
 from sarvam.task_engine.graph import TaskGraph
 from sarvam.task_engine.provider import get_planner
 from semantic.service.inference import segment_points
@@ -229,6 +230,37 @@ def generate_twin_endpoint(body: dict = Body(...)):
     return {"twin_id": twin_id, "job_id": job_id,
             "unity_scene_url": result["scene_path"],
             "object_count": result["object_count"]}
+
+
+# ------------------------------------------------------------------------- transcribe
+
+@app.post("/transcribe")
+async def transcribe(file: UploadFile, lang: str = "en"):
+    """Audio -> text only (Blueprint v3 D5, Step 4).
+
+    Deliberately independent of SARVAM_API_KEY: there is no real Sarvam audio/speech
+    API wired up anywhere in this repo (sarvam_provider.SarvamPlanner only ever sends
+    text), so this endpoint does not fake a "speech-to-intent in one call" integration.
+    It transcribes via Whisper only, then the caller (VoiceStep.jsx) feeds the returned
+    text into the existing POST /plan, which already picks Sarvam-online vs.
+    FunctionGemma-offline via get_planner.
+    """
+    job_id = jobs.create_job("transcribe")
+
+    suffix = os.path.splitext(file.filename or "")[1] or ".wav"
+    audio_path = os.path.join(artifacts_dir("audio"), f"{db.new_id()}{suffix}")
+    with open(audio_path, "wb") as f:
+        f.write(await file.read())
+
+    try:
+        text = whisper_fallback.transcribe(audio_path)
+    except RuntimeError as exc:
+        jobs.finish_job(job_id, ok=False, detail=str(exc))
+        raise HTTPException(503, {"error": "no transcription backend available",
+                                  "detail": str(exc)})
+
+    jobs.finish_job(job_id, detail=text)
+    return {"text": text, "lang": lang, "job_id": job_id}
 
 
 # ------------------------------------------------------------------------------ plan
