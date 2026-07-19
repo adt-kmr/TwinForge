@@ -19,6 +19,7 @@ from orchestrator import db, jobs
 from policy.evaluate import SIM_GATE, evaluate, inflate, record_demos
 from policy.finetune.train_bc import finetune_bc, make_baseline
 from reconstruction.reconstruct import read_ply, reconstruct
+from reconstruction.splat.refine import refine as refine_ply
 from robot.adapters.registry import get_robot
 from sarvam.task_engine.graph import TaskGraph
 from sarvam.task_engine.provider import get_planner
@@ -111,6 +112,7 @@ def capture_import(scan_id: str, body: dict = Body(...)):
 @app.post("/reconstruct")
 def reconstruct_scan(body: dict = Body(...)):
     scan_id, mode = body["scan_id"], body.get("mode", "fast")
+    do_refine = body.get("refine", False)
     conn = _db()
     _need(conn, "scans", scan_id)
     job_id = jobs.create_job("reconstruct")
@@ -118,6 +120,15 @@ def reconstruct_scan(body: dict = Body(...)):
     try:
         result = reconstruct(store.scan_dir(scan_id), mode=mode,
                              out_dir=artifacts_dir("meshes", scan_id))
+        if do_refine:
+            # refine is opt-in -- a caller who explicitly asked for it wants to know if
+            # it failed rather than silently getting un-refined output back, so this
+            # stays inside the same try/except as reconstruct() rather than degrading
+            # gracefully. Unlike the ArUco/cv2 case below, refine() has no optional
+            # missing-backend dependency (Task 7): a failure here is a genuine bug or
+            # bad input, so 400 is the right signal, same as reconstruct()'s own errors.
+            result = refine_ply(result["ply_path"], out_dir=artifacts_dir("meshes", scan_id))
+            result["ply_path"] = result["refined_ply_path"]
     except (ValueError, RuntimeError) as exc:
         jobs.finish_job(job_id, ok=False, detail=str(exc))
         raise HTTPException(400, str(exc))

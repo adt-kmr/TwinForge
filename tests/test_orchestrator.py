@@ -250,3 +250,33 @@ def test_scaniverse_import_then_reconstruct_matches_chunked_upload_path(client, 
 
     mesh = client.post("/reconstruct", json={"scan_id": "new-scan", "mode": "fast"}).json()
     assert mesh["point_count"] == 3
+
+
+def test_reconstruct_with_refine_stores_the_refined_ply(client, tmp_path):
+    """refine: true (Task 8, B4) runs reconstruction.splat.refine.refine() on top of
+    reconstruct()'s output and stores ITS refined_ply_path/point_count on the meshes row
+    instead of the un-refined ones. Reuses test_splat_refine.py's structure+clutter scene
+    fixture (floor+wall+chair) -- segment_points needs a real structure/clutter split for
+    refine() to have anything to mask out, same reasoning as that test file."""
+    from reconstruction.reconstruct import write_ply
+    from tests.test_splat_refine import scene
+
+    points = scene()
+    colors = np.full((len(points), 3), 200, dtype=np.uint8)
+    export_path = write_ply(str(tmp_path / "scene.ply"), points, colors)
+
+    imported = client.post("/capture/scene-scan/import", json={"export_path": export_path})
+    assert imported.status_code == 200, imported.text
+
+    plain = client.post(
+        "/reconstruct", json={"scan_id": "scene-scan", "mode": "fast"}).json()
+    refined = client.post(
+        "/reconstruct",
+        json={"scan_id": "scene-scan", "mode": "fast", "refine": True}).json()
+
+    assert refined["point_count"] < plain["point_count"]  # chair points masked out
+
+    conn = db.connect()
+    plain_ply = db.get(conn, "meshes", plain["mesh_id"])["ply_url"]
+    refined_ply = db.get(conn, "meshes", refined["mesh_id"])["ply_url"]
+    assert refined_ply != plain_ply
