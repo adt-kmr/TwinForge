@@ -58,7 +58,7 @@ def _parse_ply_header(f) -> tuple:
     if f.readline().strip() != b"ply":
         raise ValueError("not a PLY file (missing 'ply' magic)")
     fmt: typing.Optional[str] = None
-    elements: typing.List[typing.Tuple[str, int, typing.List[typing.Tuple[str, typing.Optional[str]]]]] = []
+    elements: typing.List[typing.Any] = []
     while True:
         line = f.readline()
         if not line:
