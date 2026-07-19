@@ -12,7 +12,8 @@
     "@paper-design/shaders-react": "^0.0.77",
     "gsap": "^3.15.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.0",

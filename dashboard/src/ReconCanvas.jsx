@@ -78,6 +78,7 @@ export default function ReconCanvas() {
       return () => {
         window.removeEventListener("resize", onResize);
         if (rafId !== null) cancelAnimationFrame(rafId);
+        scene.dispose();
       };
     }
 
@@ -88,7 +89,11 @@ export default function ReconCanvas() {
       trigger: trackRef.current,
       start: "top top",
       end: "bottom bottom",
-      scrub: true,
+      // A short scrub lag (rather than 1:1 `true`) is what actually reads as "smooth" —
+      // the scene eases toward the scroll position instead of snapping to it every tick.
+      // Same value on the title/caption crossfade below so they never drift out of sync
+      // with the canvas.
+      scrub: 0.5,
       onUpdate: (self) => paint(self.progress),
       onRefresh: (self) => {
         scene.resize();
@@ -103,7 +108,7 @@ export default function ReconCanvas() {
           trigger: trackRef.current,
           start: "top top",
           end: "8% top",
-          scrub: true,
+          scrub: 0.5,
         },
       })
       .to([titleRef.current, apertureRef.current], { opacity: 0, ease: "none" }, 0)
@@ -118,6 +123,7 @@ export default function ReconCanvas() {
       chrome.kill();
       window.removeEventListener("resize", onResize);
       if (rafId !== null) cancelAnimationFrame(rafId);
+      scene.dispose();
     };
   }, []);
 
