@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import Preloader from "./Preloader.jsx";
 import ReconCanvas from "./ReconCanvas.jsx";
 import { Link } from "./router.jsx";
 import { useReveal } from "./useReveal.js";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const STEPS = [
   ["01", "Capture", "Chunked ARCore frames from the companion app.",
@@ -36,11 +40,43 @@ const TIERS = [
   ["Snapdragon", "The quantized policy, executing on the NPU with the radios off."],
 ];
 
+// ponytail: streamlined workflow steps focused on user onboarding perspective
+const SCANIVERSE_STEPS = [
+  ["01", "Capture Space (Scaniverse)", "Scan your physical room or environment using Scaniverse on your mobile device and export the scan as a .ply or .obj file.", "User Action: Scaniverse App → Export PLY/OBJ"],
+  ["02", "Onboard & Import Scan", "Open the TwinForge dashboard, set up your project workspace, and drag-and-drop your exported Scaniverse 3D file.", "User Action: Workspace Onboarding → Upload Scan"],
+  ["03", "Verify 3D Segmentation", "Inspect auto-detected floor planes and clustered 3D objects with interactive AI semantic labels.", "User Action: Review 3D Scene & Object Labels"],
+  ["04", "Generate Digital Twin", "Convert labeled objects into a 1:1 simulation environment in Unity, complete with physics colliders.", "User Action: Generate Physics-Ready Twin"],
+  ["05", "Instruct Task & Train", "Specify the robot's objective using voice or text prompts, then run RL policy training in simulation.", "User Action: Voice/Text Prompt → Train Policy"],
+  ["06", "Deploy to Snapdragon", "Export the quantized neural policy directly to Snapdragon NPU silicon for zero-latency, offline execution.", "User Action: Deploy Binary to Edge Hardware"],
+];
+
 export default function Landing() {
   const pipelineRef = useReveal();
   const gateRef = useReveal();
   const edgeRef = useReveal();
   const startRef = useReveal();
+  const scaniverseRef = useReveal();
+  const meterFillRef = useRef(null);
+
+  // The reading sweeps in once the gate section is reached — an instrument taking a
+  // measurement, not a decorative bar filling up. useReveal already handles the section's
+  // fade-in; this is the one earned moment layered on top of it.
+  useEffect(() => {
+    const fill = meterFillRef.current;
+    if (!fill) return;
+
+    const mm = gsap.matchMedia();
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      gsap.from(fill, {
+        scaleX: 0,
+        duration: 0.9,
+        ease: "power2.out",
+        scrollTrigger: { trigger: fill, start: "top 85%" },
+      });
+    });
+
+    return () => mm.revert();
+  }, []);
 
   return (
     <>
@@ -102,7 +138,7 @@ export default function Landing() {
           </p>
           <div className="simgate" data-reveal>
             <div className="simgate__meter" aria-hidden="true">
-              <i style={{ "--pass": 0.6 }} />
+              <i ref={meterFillRef} style={{ "--pass": 0.6 }} />
             </div>
             <p className="simgate__legend">
               <b>0.60</b> minimum success rate in simulation, measured before export.
@@ -122,9 +158,9 @@ export default function Landing() {
             Every stage was built to survive a room with no uplink. The cloud is an
             optimization, not a dependency.
           </p>
-          <ul className="edge-tiers" data-reveal>
+          <ul className="edge-tiers">
             {TIERS.map(([role, body]) => (
-              <li className="edge-tier" key={role}>
+              <li className="edge-tier" key={role} data-reveal>
                 <span className="edge-tier__role">{role}</span>
                 <p>{body}</p>
               </li>
@@ -170,6 +206,33 @@ export default function Landing() {
             <code>uvicorn orchestrator.service:app --port 8000</code>. The console drives the
             same endpoints, one stage at a time.
           </p>
+        </div>
+      </section>
+
+      <section className="band" id="scaniverse" ref={scaniverseRef}>
+        <aside className="notes" data-reveal>
+          <p>Scaniverse onboarding workflow</p>
+          <p>Direct 3D scan ingest</p>
+          <p>User onboarding journey</p>
+        </aside>
+        <div className="band__body">
+          <h2 className="title" data-reveal>User onboarding & Scaniverse workflow.</h2>
+          <p className="prose" data-reveal>
+            Step-by-step user onboarding journey: from scanning a physical environment with Scaniverse to deploying an autonomous policy onto Snapdragon edge hardware:
+          </p>
+
+          <ol className="steps">
+            {SCANIVERSE_STEPS.map(([n, name, body, sig]) => (
+              <li className="step" key={n} data-reveal>
+                <span className="step__n">{n}</span>
+                <div className="step__body">
+                  <h3>{name}</h3>
+                  <p>{body}</p>
+                  <code>{sig}</code>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
     </>
