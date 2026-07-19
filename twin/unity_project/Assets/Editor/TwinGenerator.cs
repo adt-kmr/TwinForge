@@ -3,6 +3,9 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+#if UNITY_ML_AGENTS
+using Unity.MLAgents.Policies;
+#endif
 
 namespace TwinForge
 {
@@ -100,6 +103,19 @@ namespace TwinForge
             {
                 AddCollider(go, obj.collider?.type, size);
             }
+
+#if UNITY_ML_AGENTS
+            // Phase C (v3 §6.2): a spawned "robot" is the ML-Agents actor the RL policy
+            // controls. BehaviorName here is a placeholder — swap it per-activity to match
+            // one of policy/rl/config.py's ACTIVITY_TEMPLATES ("WalkToPoint", "PickObject",
+            // "FollowPath") once a reward script is attached; see twin/unity_project/README.md.
+            if (obj.label == "robot")
+            {
+                var behaviorParameters = go.AddComponent<BehaviorParameters>();
+                behaviorParameters.BehaviorName = "TwinForgeRobot";
+            }
+#endif
+
             return go;
         }
 
