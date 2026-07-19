@@ -27,7 +27,7 @@ An Edge-Native AI Platform for Automatic Digital Twin Generation, Reinforcement 
 
 # 🚀 What is DragVerse?
 
-DragVerse is an **Edge AI platform** that automatically creates a **digital twin of a real-world environment**, trains an autonomous robot inside that virtual replica using **Reinforcement Learning**, optimizes the trained policy for Qualcomm Edge AI hardware, and deploys it directly onto a physical robot—without manually building simulation environments.
+DragVerse is an **Edge AI platform** that automatically creates a **digital twin of a real-world environment**, trains an autonomous robot inside that virtual replica using **Reinforcement Learning**, optimizes the trained policy for Qualcomm Edge AI hardware, and deploys it directly onto a physical robot; without manually building simulation environments.
 
 Instead of spending days creating simulation scenes, navigation maps, reward environments, coordinate systems, and robot policies, DragVerse generates them automatically from a simple mobile scan.
 
@@ -298,7 +298,7 @@ onto Qualcomm-powered edge hardware.
 
 DragVerse consists of six major stages.
 
-## Stage 1 — Environment Capture
+## Stage 1 ;  Environment Capture
 
 A Snapdragon-powered smartphone captures:
 
@@ -312,7 +312,7 @@ The captured environment becomes the foundation for reconstruction.
 
 ---
 
-## Stage 2 — Digital Twin Generation
+## Stage 2 ;  Digital Twin Generation
 
 Captured data is transformed into:
 
@@ -327,7 +327,7 @@ No manual scene building is required.
 
 ---
 
-## Stage 3 — Robot Task Definition
+## Stage 3 ;  Robot Task Definition
 
 Users specify:
 
@@ -340,7 +340,7 @@ DragVerse converts these selections into reinforcement learning configurations.
 
 ---
 
-## Stage 4 — Reinforcement Learning
+## Stage 4 ;  Reinforcement Learning
 
 Inside Unity:
 
@@ -353,7 +353,7 @@ The generated digital twin serves directly as the training environment.
 
 ---
 
-## Stage 5 — Edge Optimization
+## Stage 5 ;  Edge Optimization
 
 Policies are exported to ONNX before:
 
@@ -366,7 +366,7 @@ This enables efficient edge inference.
 
 ---
 
-## Stage 6 — Real Robot Deployment
+## Stage 6 ;  Real Robot Deployment
 
 The optimized policy is transferred onto the robot where it performs inference locally using Qualcomm hardware acceleration.
 
@@ -415,7 +415,7 @@ DragVerse combines several research areas into one integrated workflow:
 - On-device AI Inference
 - Autonomous Navigation
 
-While each individual domain has existing tools, DragVerse focuses on automating the complete lifecycle—from environment capture to real-world deployment.
+While each individual domain has existing tools, DragVerse focuses on automating the complete lifecycle; from environment capture to real-world deployment.
 
 ---
 
@@ -451,7 +451,7 @@ Although optimized for Qualcomm platforms, the software architecture is designed
 
 ### Reproducible
 
-Every stage—from environment capture to deployment—can be reproduced using documented instructions and open-source dependencies.
+Every stage; from environment capture to deployment; can be reproduced using documented instructions and open-source dependencies.
 
 ---
 
@@ -1606,7 +1606,7 @@ If you find DragVerse useful:
 
 💡 Suggest new features
 
-Every contribution—large or small—helps improve the project.
+Every contribution; large or small; helps improve the project.
 
 ---
 
