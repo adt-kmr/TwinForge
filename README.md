@@ -1351,9 +1351,9 @@ If DragVerse contributes to your research, please cite it.
 ```bibtex
 @software{DragVerse2026,
   title={DragVerse: Automatic Digital Twin Generation and Edge Reinforcement Learning Platform},
-  author={Your Team},
+  author={Team Ghost Map},
   year={2026},
-  url={https://github.com/your-org/DragVerse}
+  url={https://github.com/adt-kmr/TwinForge}
 }
 ```
 
